@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg18-trixie
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+    shm_size: 1g
+    volumes:
+      - pgdata:/var/lib/postgresql
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+volumes:
+  pgdata:

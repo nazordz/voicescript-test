@@ -1,4 +1,4 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Voicescript
 
 ## Getting Started
 
@@ -16,21 +16,122 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Start with docker compose
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+docker compose up -d
+```
 
-## Learn More
+## Disclaimer
 
-To learn more about Next.js, take a look at the following resources:
+I used AI-assisted tooling for scaffolding and implementation support, but reviewed, tested, and adapted the code myself. I can explain the architecture and implementation decisions.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Brief
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Title: Court Reporting Workflow Manager
+Goal: Build a simplified workflow system for managing transcription jobs
 
-## Deploy on Vercel
+**Core Scenario**
+A court reporting agency receives audio recordings.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+They need to:
+1. Assign jobs to court reporters
+2. Assign editors to review transcripts
+3. Track job status
+4. Calculate payments
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Required Features**
+
+1. Job Management
+  Create a job:
+  - case_name
+  - duration (minutes)
+  - location (physical / remote)
+  - status
+  Statuses:
+  ```
+    NEW → ASSIGNED → TRANSCRIBED → REVIEWED → COMPLETED
+  ```
+2. Reporter Assignment
+   - Assign job to a reporter
+   - Reporter attributes:
+     - name
+     - location
+     - availability
+  - Logic:
+    - Prefer same city for physical jobs
+    - Allow remote assignment
+3. Editor Assignment
+   - Assign editor after transcription
+   - Track review status
+4. Payment Calculation
+   ```
+   Example rules:
+    - Reporter paid per minute (e.g. 2000 IDR/min)
+    - Editor paid per job (flat fee)
+
+    System should:
+    - calculate total payout
+    - display per-job earnings
+   ```
+
+**Frontend Requirements:**
+backoffice:
+  - data users + form
+  - data reporters + form
+  - data editors + form
+  - main scenario:
+    - create job
+    - job list
+    - change of status and history record
+    - assignments UI
+
+criterias:
+  - support desktop and mobile screen
+
+**Backend Requirements:**
+REST API backend in nextjs:
+
+create job
+  - assign reporter/editor
+  - update status
+  - calculate payment
+
+Use:
+  - Node.js + TypeScript
+  - Prisma + postgres
+
+Create migrations and seeders with prisma
+  1. editors
+  2. reporters
+     1. location (city_name)
+  3. jobs
+
+
+Rules:
+  - use smallint for column status and location in table jobs
+  - create CRUDs and also UI for table and form
+    - rules:
+      1. add filter and sorting
+      2. add search with debounce
+    - tables:
+      2. editors
+      3. reporters
+      4. jobs
+  - update e2e with playwright in folder ./tests
+
+---
+
+tech stacks:
+- prisma for:
+  - migration
+  - models
+- zod for validation
+- useQuery - to fetch and mutation
+- tailwind + daisyUI
+- docker compose
+- dayjs
+
+mcp tools:
+- postgres-mcp
+- context7

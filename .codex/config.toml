@@ -1,0 +1,10 @@
+[mcp_servers]
+[mcp_servers.postgres-mcp]
+command = "uvx"
+args = [
+    "postgres-mcp",
+    "--access-mode=restricted"
+]
+
+[mcp_servers.postgres-mcp.env]
+DATABASE_URI = "postgresql://postgres:postgres@localhost:5432/postgres"
