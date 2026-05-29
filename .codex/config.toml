@@ -8,3 +8,14 @@ args = [
 
 [mcp_servers.postgres-mcp.env]
 DATABASE_URI = "postgresql://postgres:postgres@localhost:5432/postgres"
+
+[mcp_servers.playwright]
+command = "npx"
+args = [
+    "@playwright/mcp@latest",
+    "--browser=chrome"
+]
+
+[mcp_servers.chrome-devtools]
+command = "npx"
+args = ["-y", "chrome-devtools-mcp@latest", "--slim"]

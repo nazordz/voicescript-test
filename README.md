@@ -77,7 +77,6 @@ They need to:
 
 **Frontend Requirements:**
 backoffice:
-  - data users + form
   - data reporters + form
   - data editors + form
   - main scenario:
@@ -119,7 +118,7 @@ Rules:
       3. reporters
       4. jobs
   - update e2e with playwright in folder ./tests
-
+  - use snake_case for column names in table
 ---
 
 tech stacks:

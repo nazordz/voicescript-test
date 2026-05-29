@@ -1,3 +1,8 @@
 {
-    "js/ts.tsdk.path": "node_modules/typescript/lib"
+  "css.lint.unknownAtRules": "ignore",
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "redHatDependencyAnalytics.exclude": ["**/.next/**"],
+  "files.watcherExclude": {
+    "**/.next/**": true
+  }
 }

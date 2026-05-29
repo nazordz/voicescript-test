@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Reporter {
+  id           String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  name         String
+  location     String
+  availability Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  jobs         Job[]
+
+  @@index([name])
+  @@index([location])
+  @@index([availability])
+  @@map("reporters")
+}
+
+model Editor {
+  id           String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  name         String
+  availability Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  jobs         Job[]
+
+  @@index([name])
+  @@index([availability])
+  @@map("editors")
+}
+
+model Job {
+  id              String             @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  caseName        String             @map("case_name")
+  durationMinutes Int                @map("duration_minutes")
+  location        String
+  status          Int                @default(0) @db.SmallInt
+  reporterId      String?            @map("reporter_id") @db.Uuid
+  editorId        String?            @map("editor_id") @db.Uuid
+  isRemote        Boolean            @default(false) @map("is_remote")
+  reporterRateIdr Int                @default(2000) @map("reporter_rate_idr")
+  editorFeeIdr    Int                @default(50000) @map("editor_fee_idr")
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt       DateTime           @updatedAt @map("updated_at")
+  reporter        Reporter?          @relation(fields: [reporterId], references: [id], onDelete: SetNull)
+  editor          Editor?            @relation(fields: [editorId], references: [id], onDelete: SetNull)
+  statusHistories JobStatusHistory[]
+
+  @@index([caseName])
+  @@index([status])
+  @@index([location])
+  @@index([isRemote])
+  @@index([reporterId])
+  @@index([editorId])
+  @@map("jobs")
+}
+
+model JobStatusHistory {
+  id         String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  jobId      String   @map("job_id") @db.Uuid
+  fromStatus Int?     @map("from_status") @db.SmallInt
+  toStatus   Int      @map("to_status") @db.SmallInt
+  note       String?
+  createdAt  DateTime @default(now()) @map("created_at")
+  job        Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@index([createdAt])
+  @@map("job_status_histories")
+}

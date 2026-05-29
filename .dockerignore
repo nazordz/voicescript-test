@@ -1,0 +1,17 @@
+node_modules
+.next
+generated
+.github
+.husky
+*.lock
+!pnpm-lock.yaml
+.env
+.env.*
+package-lock.json
+yarn.lock
+playwright-report
+.rtk
+.claude
+.codex
+.pnpm-store
+.vscode
