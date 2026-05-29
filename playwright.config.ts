@@ -13,6 +13,7 @@ import { defineConfig, devices } from "@playwright/test";
  */
 export default defineConfig({
   testDir: "./tests",
+  globalSetup: "./tests/global-setup",
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -36,12 +37,21 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
+      testMatch: /workflow\.spec\.ts/,
       use: { ...devices["Desktop Chrome"] },
     },
 
     {
+      name: "mobile-setup",
+      testMatch: /db-cleanup\.setup\.ts/,
+      dependencies: ["chromium"],
+    },
+
+    {
       name: "Mobile Chrome",
+      testMatch: /workflow\.spec\.ts/,
       use: { ...devices["Pixel 5"] },
+      dependencies: ["mobile-setup"],
     },
 
     /* Test against mobile viewports. */

@@ -1,5 +1,6 @@
 "use client";
 
+import { BottomNav } from "@/components/dashboard/BottomNav";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 
@@ -22,7 +23,8 @@ export default function DashboardLayout({
           </label>
           <span className="text-lg font-semibold">Voicescript</span>
         </div>
-        <section className="flex-1 p-4 lg:p-6">{children}</section>
+        <section className="flex-1 p-4 pb-20 lg:p-6 lg:pb-6">{children}</section>
+        <BottomNav />
       </div>
       <div className="drawer-side">
         <label

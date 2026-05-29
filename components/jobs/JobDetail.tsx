@@ -75,7 +75,7 @@ export function JobDetail({
             value={reporterId}
             onChange={(e) => setReporterId(e.target.value)}
           >
-            <option value="">Auto assign</option>
+            <option value="">Auto</option>
             {reporters.data?.data
               .filter((r) => r.availability)
               .map((r) => (
@@ -105,7 +105,7 @@ export function JobDetail({
             value={editorId}
             onChange={(e) => setEditorId(e.target.value)}
           >
-            <option value="">Auto assign</option>
+            <option value="">Auto</option>
             {editors.data?.data
               .filter((e) => e.availability)
               .map((e) => (

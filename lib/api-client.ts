@@ -43,5 +43,5 @@ export function formatIdr(value: number) {
     style: "currency",
     currency: "IDR",
     maximumFractionDigits: 0,
-  }).format(value);
+  }).format(value).replace(/Rp\s+/, "Rp");
 }

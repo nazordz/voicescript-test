@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BriefcaseIcon,
@@ -26,13 +25,14 @@ export function Sidebar() {
       <ul className="menu w-full p-0">
         {navItems.map(({ href, label, Icon }) => (
           <li key={href}>
-            <Link
-              href={href}
+            <button
+              type="button"
               className={pathname.startsWith(href) ? "menu-active" : ""}
+              onClick={() => { window.location.href = href; }}
             >
               <Icon className="h-5 w-5" />
               {label}
-            </Link>
+            </button>
           </li>
         ))}
       </ul>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { requestJson } from "@/lib/api-client";
 import { useListState } from "@/hooks/useListState";
@@ -20,6 +20,19 @@ export default function EditorsPage() {
   const [formModal, setFormModal] = useState<FormModal>({ open: false, editor: null });
   const [deleteModal, setDeleteModal] = useState<DeleteModal>({ open: false, editor: null });
   const [error, setError] = useState<string | null>(null);
+  const [quickName, setQuickName] = useState("");
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
+  const quickCreate = useMutation({
+    mutationFn: () =>
+      requestJson<Editor>("/api/editors", { method: "POST", data: { name: quickName } }),
+    onSuccess: async () => {
+      setQuickName("");
+      await queryClient.invalidateQueries({ queryKey: ["editors"] });
+    },
+    onError: (err) => setError(err instanceof Error ? err.message : "Create failed"),
+  });
 
   const deleteEditor = useMutation({
     mutationFn: (id: string) =>
@@ -34,17 +47,52 @@ export default function EditorsPage() {
     },
   });
 
+  function handleQuickCreate(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    quickCreate.mutate();
+  }
+
   return (
     <>
+      <div className="rounded-box mb-4 bg-base-100 p-4 shadow-sm">
+        <form className="flex flex-wrap items-end gap-3" onSubmit={handleQuickCreate}>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="editor-name" className="text-sm font-medium">
+              Name
+            </label>
+            <input
+              id="editor-name"
+              aria-label="Name"
+              className="input input-bordered input-sm"
+              required
+              disabled={!mounted}
+              value={quickName}
+              onChange={(e) => setQuickName(e.target.value)}
+            />
+          </div>
+          <button
+            className="btn btn-primary btn-sm"
+            type="submit"
+            disabled={!mounted || quickCreate.isPending}
+          >
+            {quickCreate.isPending ? (
+              <span className="loading loading-spinner loading-xs" />
+            ) : null}
+            Create
+          </button>
+        </form>
+      </div>
+
       <Panel
         title="Editors"
         action={
           <button
-            className="btn btn-primary btn-sm"
+            className="btn btn-outline btn-sm"
             type="button"
             onClick={() => setFormModal({ open: true, editor: null })}
           >
-            + New editor
+            Advanced
           </button>
         }
       >

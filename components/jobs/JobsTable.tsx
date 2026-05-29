@@ -33,7 +33,6 @@ export function JobsTable({
         state={state}
         setState={setState}
         showLocation
-        showStatus
         showRemote
       />
       <div className="overflow-x-auto">
