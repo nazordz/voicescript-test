@@ -14,9 +14,6 @@ cp .env.example .env
 # boot up only postgres container
 docker compose up postgres -d
 
-# run development server
-pnpm run dev
-
 # generate prisma client 
 pnpm prisma:generate
 
@@ -25,16 +22,35 @@ pnpm prisma:migrate
 
 # run seeding
 pnpm prisma:seed
+
+# run development server
+pnpm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Start with docker compose
 
+Make sure the docker is running on your computer and this command will not provide seeder data for database by default.
+
 ```bash
 cp .env.example .env
 
+# run command below if you want to insert seeder data
+# pnpm prisma:seed
+
 docker compose up -d
+```
+
+## Run playwright test
+
+Make sure port 3000 & 5432 are not being use or if you running docker container from this project before, run this command `docker compose down`.
+
+```bash
+# run in headless mode
+pnpm test:e2e
+# or with ui
+pnpm test:e2e:ui
 ```
 
 ## Disclaimer
@@ -162,5 +178,7 @@ mcp tools:
 The improvised changes or decissions I made are listed below:
 
 1. I decided to create server-side API endpoints directly in Next.js because, for this assessment test, building a full-stack application this way is easier and helps speed up development.
-2. I added new job status **CANCELLED** if user want to cancel/remove it.
-3. Add auto assign option in Job Detail panel to auto-select a reporter in same city as the Job if possible.
+2. I decided to create CRUD pages for editors and reporters.
+3. I added new job status **CANCELLED** if user want to cancel/remove it.
+4. Add auto assign option in Job Detail panel to auto-select a reporter in same city as the Job if possible.
+5. Added e2e tests with playwright by adding attribute 'data-testid', create test scenarios in folder './tests' and implemented testcontainers in playwright test setup.

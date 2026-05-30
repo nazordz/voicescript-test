@@ -133,6 +133,70 @@ test.describe("Job workflow", () => {
     ).toHaveCount(0);
   });
 
+  test("auto-assign prefers a same-city reporter for physical jobs", async ({
+    page,
+  }, testInfo) => {
+    // A different-city reporter is created first so it has the older createdAt:
+    // a naive "pick the oldest available reporter" would grab it. The same-city
+    // rule must skip it in favour of the Surabaya reporter.
+    const otherCity = unique("Medan Reporter", testInfo);
+    const sameCity = unique("Surabaya Reporter", testInfo);
+    await createReporter(page, otherCity, "Medan", true);
+    await createReporter(page, sameCity, "Surabaya", true);
+
+    const caseName = unique("Same City Case", testInfo);
+    await createJob(page, caseName, { location: "Surabaya", remote: false });
+    await openJob(page, caseName);
+
+    // Leave the select on "Auto assign" (empty) so the server picks the match.
+    const [response] = await Promise.all([
+      page.waitForResponse(
+        (r) =>
+          r.url().includes("/assign-reporter") &&
+          r.request().method() === "POST" &&
+          r.ok(),
+      ),
+      page.getByTestId("assign-reporter-button").click(),
+    ]);
+
+    // The serialized job carries the assigned reporter relation. It must be in
+    // the job's city, never the cross-city candidate.
+    const assigned = (await response.json()) as {
+      reporter: { location: string } | null;
+    };
+    expect(assigned.reporter?.location).toBe("Surabaya");
+    expect(assigned.reporter?.location).not.toBe("Medan");
+    await expect(detailStatus(page)).toHaveText("ASSIGNED");
+  });
+
+  test("payment recalculates when the reporter rate changes", async ({
+    page,
+  }, testInfo) => {
+    const caseName = unique("Reporter Rate Case", testInfo);
+    await createJob(page, caseName, { minutes: 80, location: "Jakarta" });
+    await openJob(page, caseName);
+
+    // Default rate 2000 IDR/min * 80 = 160.000; editor 50.000; total 210.000.
+    await expect(page.getByTestId("payment-reporter")).toContainText("160.000");
+    await expect(page.getByTestId("payment-total")).toContainText("210.000");
+
+    // The reporter rate lives on the job form, not the detail payment panel.
+    await page.getByTestId("job-edit-button").click();
+    const modal = page.getByTestId("job-form-modal");
+    await expect(modal).toBeVisible();
+    await modal.getByTestId("job-form-reporter-rate").fill("3000");
+    await modal.getByTestId("job-form-submit").click();
+    await expect(modal).toBeHidden();
+
+    // Reopen the persisted record to read the recalculated payout.
+    await page.reload();
+    await openJob(page, caseName);
+
+    // 3000 * 80 = 240.000; editor unchanged 50.000; total 290.000.
+    await expect(page.getByTestId("payment-reporter")).toContainText("240.000");
+    await expect(page.getByTestId("payment-total")).toContainText("290.000");
+  });
+
   test("job form rejects an empty case name", async ({ page }) => {
     await page.goto("/jobs");
     await page.getByTestId("job-new-button").click();
