@@ -6,6 +6,7 @@ import { requestJson } from "@/lib/api-client";
 import { useListState } from "@/hooks/useListState";
 import { DeleteConfirmModal } from "@/components/ui/DeleteConfirmModal";
 import { ErrorBanner } from "@/components/ui/ErrorBanner";
+import { useToast } from "@/components/ui/Toast";
 import { Panel } from "@/components/ui/Panel";
 import { EditorFormModal } from "@/components/editors/EditorFormModal";
 import { EditorsTable } from "@/components/editors/EditorsTable";
@@ -16,6 +17,7 @@ type DeleteModal = { open: boolean; editor: Editor | null };
 
 export default function EditorsPage() {
   const queryClient = useQueryClient();
+  const { notify } = useToast();
   const [state, setState] = useListState({ sortBy: "name", sortDir: "asc" });
   const [formModal, setFormModal] = useState<FormModal>({ open: false, editor: null });
   const [deleteModal, setDeleteModal] = useState<DeleteModal>({ open: false, editor: null });
@@ -25,8 +27,10 @@ export default function EditorsPage() {
     mutationFn: (id: string) =>
       requestJson<void>(`/api/editors/${id}`, { method: "DELETE" }),
     onSuccess: async () => {
+      const name = deleteModal.editor?.name;
       setDeleteModal({ open: false, editor: null });
       await queryClient.invalidateQueries({ queryKey: ["editors"] });
+      notify(name ? `Editor "${name}" removed` : "Editor removed");
     },
     onError: (err) => {
       setError(err instanceof Error ? err.message : "Delete failed");

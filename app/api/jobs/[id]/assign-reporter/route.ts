@@ -21,21 +21,22 @@ export async function POST(request: Request, context: RouteContext) {
       return notFound("Job not found.");
     }
 
-    const reporter = body.data.reporterId
-      ? await prisma.reporter.findFirst({
-          where: { id: body.data.reporterId, availability: true },
-        })
-      : await prisma.reporter.findFirst({
-          where: {
-            availability: true,
-            ...(job.isRemote ? {} : { location: job.location }),
-          },
-          orderBy: { createdAt: "asc" },
-        });
+    const reporter = await prisma.reporter.findFirst({
+      where: {
+        availability: true,
+        ...(body.data.reporterId
+          ? { id: body.data.reporterId }
+          : job.isRemote
+            ? {}
+            : { location: job.location }),
+      },
+      orderBy: body.data.reporterId ? undefined : { createdAt: "asc" },
+    });
 
+    const shouldFindFallbackReporter = body.data.reporterId || !job.isRemote;
     const fallbackReporter =
       reporter ??
-      (body.data.reporterId || !job.isRemote
+      (shouldFindFallbackReporter
         ? await prisma.reporter.findFirst({
             where: { availability: true },
             orderBy: { createdAt: "asc" },

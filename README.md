@@ -1,17 +1,30 @@
 # Voicescript
 
-## Getting Started
+## Run first time
 
-First, run the development server:
+to run the development server for first time run commands below:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# install dependecies
+pnpm i
+
+# copy .env.example
+cp .env.example .env
+
+# boot up only postgres container
+docker compose up postgres -d
+
+# run development server
+pnpm run dev
+
+# generate prisma client 
+pnpm prisma:generate
+
+# run migration to create tables
+pnpm prisma:migrate
+
+# run seeding
+pnpm prisma:seed
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -19,12 +32,14 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## Start with docker compose
 
 ```bash
+cp .env.example .env
+
 docker compose up -d
 ```
 
 ## Disclaimer
 
-I used AI-assisted tooling for scaffolding and implementation support, but reviewed, tested, and adapted the code myself. I can explain the architecture and implementation decisions.
+I used AI-assisted tooling for scaffolding and implementation support, but reviewed, tested, and adapted the code myself.
 
 ## Brief
 
@@ -144,6 +159,8 @@ mcp tools:
 
 ## Notes
 
-The improvised changes are listed below:
+The improvised changes or decissions I made are listed below:
 
-1. I added new job status **CANCELLED** if user want to cancel/remove it.
+1. I decided to create server-side API endpoints directly in Next.js because, for this assessment test, building a full-stack application this way is easier and helps speed up development.
+2. I added new job status **CANCELLED** if user want to cancel/remove it.
+3. Add auto assign option in Job Detail panel to auto-select a reporter in same city as the Job if possible.

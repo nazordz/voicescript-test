@@ -25,14 +25,13 @@ export async function POST(request: Request, context: RouteContext) {
       return badRequest("Editors can only be assigned after transcription.");
     }
 
-    const editor = body.data.editorId
-      ? await prisma.editor.findFirst({
-          where: { id: body.data.editorId, availability: true },
-        })
-      : await prisma.editor.findFirst({
-          where: { availability: true },
-          orderBy: { createdAt: "asc" },
-        });
+    const editor = await prisma.editor.findFirst({
+      where: {
+        availability: true,
+        ...(body.data.editorId ? { id: body.data.editorId } : {}),
+      },
+      orderBy: body.data.editorId ? undefined : { createdAt: "asc" },
+    });
 
     if (!editor) {
       return badRequest("No available editor found.");

@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { requestJson } from "@/lib/api-client";
+import { useToast } from "@/components/ui/Toast";
 import {
   editorFormDefaults,
   editorFormSchema,
@@ -24,6 +25,7 @@ export function EditorFormModal({
   onSuccess: () => void;
 }) {
   const queryClient = useQueryClient();
+  const { notify } = useToast();
   const {
     register,
     handleSubmit,
@@ -54,8 +56,11 @@ export function EditorFormModal({
           data: values,
         },
       ),
-    onSuccess: async () => {
+    onSuccess: async (saved) => {
       await queryClient.invalidateQueries({ queryKey: ["editors"] });
+      notify(
+        editor ? `Editor "${saved.name}" updated` : `Editor "${saved.name}" created`,
+      );
       onSuccess();
       onClose();
     },

@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { INDONESIAN_CITIES } from "@/lib/constants";
 import { requestJson } from "@/lib/api-client";
+import { useToast } from "@/components/ui/Toast";
 import {
   reporterFormDefaults,
   reporterFormSchema,
@@ -25,6 +26,7 @@ export function ReporterFormModal({
   onSuccess: () => void;
 }) {
   const queryClient = useQueryClient();
+  const { notify } = useToast();
   const {
     register,
     handleSubmit,
@@ -59,8 +61,13 @@ export function ReporterFormModal({
           data: values,
         },
       ),
-    onSuccess: async () => {
+    onSuccess: async (saved) => {
       await queryClient.invalidateQueries({ queryKey: ["reporters"] });
+      notify(
+        reporter
+          ? `Reporter "${saved.name}" updated`
+          : `Reporter "${saved.name}" created`,
+      );
       onSuccess();
       onClose();
     },

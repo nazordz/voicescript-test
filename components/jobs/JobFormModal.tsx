@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { INDONESIAN_CITIES } from "@/lib/constants";
 import { requestJson } from "@/lib/api-client";
+import { useToast } from "@/components/ui/Toast";
 import {
   jobFormDefaults,
   jobFormSchema,
@@ -25,6 +26,7 @@ export function JobFormModal({
   onSuccess: (saved: Job) => void;
 }) {
   const queryClient = useQueryClient();
+  const { notify } = useToast();
   const {
     register,
     handleSubmit,
@@ -61,6 +63,7 @@ export function JobFormModal({
       }),
     onSuccess: async (saved) => {
       await queryClient.invalidateQueries({ queryKey: ["jobs"] });
+      notify(job ? `Job "${saved.caseName}" updated` : `Job "${saved.caseName}" created`);
       onSuccess(saved);
       onClose();
     },
