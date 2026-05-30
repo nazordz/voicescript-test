@@ -1,18 +1,21 @@
 import { defineConfig, devices } from "@playwright/test";
+import { resolveDatabaseUrl } from "./tests/global-setup";
 
 /**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
+ * DATABASE_URL the dev server uses. The Postgres testcontainer started in
+ * `tests/global-setup.ts` is bound to this same host/port, so the value stays
+ * the `.env.example` default.
  */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+const DATABASE_URL = resolveDatabaseUrl();
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
   testDir: "./tests",
+  /* Provision a throwaway Postgres container, migrate and seed it once. */
+  globalSetup: "./tests/global-setup.ts",
+  globalTeardown: "./tests/global-teardown.ts",
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -30,6 +33,12 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
+
+    /* Allow pointing at a pre-installed Chromium when the Playwright CDN is
+     * unreachable (e.g. locked-down CI). Unset for normal local runs. */
+    launchOptions: process.env.PW_CHROMIUM_PATH
+      ? { executablePath: process.env.PW_CHROMIUM_PATH }
+      : {},
   },
 
   /* Configure projects for major browsers */
@@ -70,5 +79,10 @@ export default defineConfig({
     command: "pnpm dev",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
+    env: {
+      DATABASE_URL,
+      NODE_ENV: "development",
+    },
   },
 });

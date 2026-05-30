@@ -66,18 +66,19 @@ export function EditorFormModal({
   });
 
   return (
-    <dialog className="modal" open={open}>
+    <dialog className="modal" open={open} data-testid="editor-form-modal">
       <div className="modal-box">
         <h3 className="text-lg font-bold">
           {editor ? "Edit editor" : "New editor"}
         </h3>
         {errors.root ? (
-          <div className="alert alert-error mt-3 text-sm">
+          <div className="alert alert-error mt-3 text-sm" data-testid="editor-form-error">
             {errors.root.message}
           </div>
         ) : null}
         <form
           className="mt-4 flex flex-col gap-3"
+          data-testid="editor-form"
           onSubmit={handleSubmit((values) => save.mutate(values))}
           noValidate
         >
@@ -86,27 +87,37 @@ export function EditorFormModal({
             <input
               className={`input w-full${errors.name ? " input-error" : ""}`}
               aria-invalid={errors.name ? "true" : "false"}
+              data-testid="editor-form-name"
               {...register("name")}
             />
             {errors.name ? (
-              <p className="label text-error">{errors.name.message}</p>
+              <p className="label text-error" data-testid="editor-form-name-error">
+                {errors.name.message}
+              </p>
             ) : null}
           </fieldset>
           <label className="label cursor-pointer justify-start gap-3">
             <input
               className="toggle toggle-primary"
               type="checkbox"
+              data-testid="editor-form-availability"
               {...register("availability")}
             />
             <span className="label-text">Available</span>
           </label>
           <div className="modal-action mt-2">
-            <button className="btn btn-ghost" type="button" onClick={onClose}>
+            <button
+              className="btn btn-ghost"
+              type="button"
+              data-testid="editor-form-cancel"
+              onClick={onClose}
+            >
               Cancel
             </button>
             <button
               className="btn btn-primary"
               type="submit"
+              data-testid="editor-form-submit"
               disabled={save.isPending}
             >
               {save.isPending ? (

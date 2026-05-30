@@ -42,6 +42,7 @@ export default function EditorsPage() {
           <button
             className="btn btn-primary btn-sm"
             type="button"
+            data-testid="editor-new-button"
             onClick={() => setFormModal({ open: true, editor: null })}
           >
             + New editor

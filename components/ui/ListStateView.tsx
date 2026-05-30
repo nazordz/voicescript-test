@@ -6,11 +6,25 @@ export function ListStateView({
   rows: number;
 }) {
   if (isLoading) {
-    return <div className="py-4 text-sm text-base-content/60">Loading...</div>;
+    return (
+      <div
+        className="py-4 text-sm text-base-content/60"
+        data-testid="list-loading"
+      >
+        Loading...
+      </div>
+    );
   }
 
   if (rows === 0) {
-    return <div className="py-4 text-sm text-base-content/60">No rows</div>;
+    return (
+      <div
+        className="py-4 text-sm text-base-content/60"
+        data-testid="list-empty"
+      >
+        No rows
+      </div>
+    );
   }
 
   return null;

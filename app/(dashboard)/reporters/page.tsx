@@ -42,6 +42,7 @@ export default function ReportersPage() {
           <button
             className="btn btn-primary btn-sm"
             type="button"
+            data-testid="reporter-new-button"
             onClick={() => setFormModal({ open: true, reporter: null })}
           >
             + New reporter

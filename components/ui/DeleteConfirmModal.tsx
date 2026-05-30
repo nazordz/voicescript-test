@@ -23,12 +23,18 @@ export function DeleteConfirmModal({
           <p className="py-4 text-sm text-base-content/70">{description}</p>
         ) : null}
         <div className="modal-action">
-          <button className="btn btn-ghost" type="button" onClick={onClose}>
+          <button
+            className="btn btn-ghost"
+            type="button"
+            data-testid="delete-cancel-button"
+            onClick={onClose}
+          >
             Cancel
           </button>
           <button
             className="btn btn-error"
             type="button"
+            data-testid="delete-confirm-button"
             disabled={isPending}
             onClick={onConfirm}
           >

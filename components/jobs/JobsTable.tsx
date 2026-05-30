@@ -37,7 +37,7 @@ export function JobsTable({
         showRemote
       />
       <div className="overflow-x-auto">
-        <table className="table table-sm">
+        <table className="table table-sm" data-testid="jobs-table">
           <thead>
             <tr>
               <th>
@@ -66,6 +66,8 @@ export function JobsTable({
               <tr
                 className="cursor-pointer hover"
                 key={job.id}
+                data-testid="job-row"
+                data-case-name={job.caseName}
                 onClick={() => onSelect(job)}
               >
                 <td>

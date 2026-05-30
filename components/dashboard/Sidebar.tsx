@@ -28,6 +28,7 @@ export function Sidebar() {
           <li key={href}>
             <Link
               href={href}
+              data-testid={`nav-${label.toLowerCase()}`}
               className={pathname.startsWith(href) ? "menu-active" : ""}
             >
               <Icon className="h-5 w-5" />

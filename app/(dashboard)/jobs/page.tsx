@@ -54,6 +54,7 @@ export default function JobsPage() {
           <button
             className="btn btn-primary btn-sm"
             type="button"
+            data-testid="job-new-button"
             onClick={() => setFormModal({ open: true, job: null })}
           >
             + New job

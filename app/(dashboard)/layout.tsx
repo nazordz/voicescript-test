@@ -17,6 +17,7 @@ export default function DashboardLayout({
             htmlFor="main-sidebar"
             className="btn btn-ghost drawer-button"
             aria-label="Open sidebar"
+            data-testid="sidebar-toggle"
           >
             <Bars3Icon className="h-5 w-5" />
           </label>

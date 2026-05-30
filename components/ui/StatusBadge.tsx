@@ -11,7 +11,10 @@ const STATUS_CLASSES: Record<number, string> = {
 
 export function StatusBadge({ status }: { status: number }) {
   return (
-    <span className={`badge ${STATUS_CLASSES[status] ?? "badge-ghost"}`}>
+    <span
+      className={`badge ${STATUS_CLASSES[status] ?? "badge-ghost"}`}
+      data-testid="status-badge"
+    >
       {JOB_STATUS_LABELS[status as keyof typeof JOB_STATUS_LABELS] ?? "UNKNOWN"}
     </span>
   );

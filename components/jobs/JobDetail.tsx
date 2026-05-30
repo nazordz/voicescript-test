@@ -60,10 +60,12 @@ export function JobDetail({
   const canAssignEditor = job.status === JOB_STATUS.TRANSCRIBED;
 
   return (
-    <div className="mt-4 rounded-box bg-base-100 p-4 shadow-sm">
+    <div className="mt-4 rounded-box bg-base-100 p-4 shadow-sm" data-testid="job-detail">
       <div className="flex flex-col gap-3 border-b border-base-300 pb-4 md:flex-row md:items-start md:justify-between">
         <div>
-          <h2 className="text-lg font-semibold">{job.caseName}</h2>
+          <h2 className="text-lg font-semibold" data-testid="job-detail-title">
+            {job.caseName}
+          </h2>
           <div className="mt-1 flex flex-wrap gap-2">
             <StatusBadge status={job.status} />
             <span className="badge badge-outline">{job.location}</span>
@@ -75,6 +77,7 @@ export function JobDetail({
         <button
           className="btn btn-outline btn-sm"
           type="button"
+          data-testid="job-edit-button"
           onClick={() => onEdit(job)}
         >
           Edit job
@@ -85,6 +88,7 @@ export function JobDetail({
           <h3 className="mb-3 font-medium">Reporter</h3>
           <select
             className="select select-bordered mb-3 w-full"
+            data-testid="assign-reporter-select"
             {...register("reporterId")}
           >
             <option value="">Auto assign</option>
@@ -99,6 +103,7 @@ export function JobDetail({
           <button
             className="btn btn-primary btn-sm w-full"
             type="button"
+            data-testid="assign-reporter-button"
             onClick={() => {
               const reporterId = getValues("reporterId");
               onAction({
@@ -120,6 +125,7 @@ export function JobDetail({
             aria-invalid={
               dirtyFields.editorId && !canAssignEditor ? "true" : "false"
             }
+            data-testid="assign-editor-select"
             {...register("editorId")}
           >
             <option value="">Auto assign</option>
@@ -134,6 +140,7 @@ export function JobDetail({
           <button
             className="btn btn-secondary btn-sm w-full"
             type="button"
+            data-testid="assign-editor-button"
             disabled={!canAssignEditor}
             aria-disabled={!canAssignEditor}
             onClick={() => {
@@ -161,11 +168,13 @@ export function JobDetail({
             className="input input-bordered mb-3 w-full"
             min={0}
             type="number"
+            data-testid="payment-editor-fee"
             {...register("editorFee", { valueAsNumber: true })}
           />
           <button
             className="btn btn-accent btn-sm w-full"
             type="button"
+            data-testid="payment-save-button"
             onClick={() =>
               onAction({
                 id: job.id,
@@ -184,19 +193,19 @@ export function JobDetail({
           <div className="stats stats-vertical w-full border border-base-300 md:stats-horizontal">
             <div className="stat">
               <div className="stat-title">Reporter</div>
-              <div className="stat-value text-lg">
+              <div className="stat-value text-lg" data-testid="payment-reporter">
                 {formatIdr(job.payments.reporterPayoutIdr)}
               </div>
             </div>
             <div className="stat">
               <div className="stat-title">Editor</div>
-              <div className="stat-value text-lg">
+              <div className="stat-value text-lg" data-testid="payment-editor">
                 {formatIdr(job.payments.editorPayoutIdr)}
               </div>
             </div>
             <div className="stat">
               <div className="stat-title">Total</div>
-              <div className="stat-value text-lg">
+              <div className="stat-value text-lg" data-testid="payment-total">
                 {formatIdr(job.payments.totalPayoutIdr)}
               </div>
             </div>
@@ -206,6 +215,7 @@ export function JobDetail({
               <button
                 className="btn btn-success"
                 type="button"
+                data-testid="advance-status-button"
                 onClick={() =>
                   onAction({
                     id: job.id,
@@ -224,6 +234,7 @@ export function JobDetail({
               <button
                 className="btn btn-error btn-outline"
                 type="button"
+                data-testid="cancel-job-button"
                 onClick={() =>
                   onAction({
                     id: job.id,
@@ -242,9 +253,12 @@ export function JobDetail({
         </div>
         <div>
           <h3 className="mb-3 font-medium">History</h3>
-          <ul className="timeline timeline-vertical timeline-compact">
+          <ul
+            className="timeline timeline-vertical timeline-compact"
+            data-testid="status-history"
+          >
             {job.statusHistories.map((history) => (
-              <li key={history.id}>
+              <li key={history.id} data-testid="status-history-item">
                 <div className="timeline-start text-xs text-base-content/60">
                   {dayjs(history.createdAt).format("DD MMM HH:mm")}
                 </div>

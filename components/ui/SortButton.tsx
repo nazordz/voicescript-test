@@ -20,6 +20,7 @@ export function SortButton({
     <button
       className="btn btn-ghost btn-xs px-1"
       type="button"
+      data-testid={`sort-${field}`}
       onClick={() =>
         setState({ ...state, page: 1, sortBy: field, sortDir: nextDir })
       }

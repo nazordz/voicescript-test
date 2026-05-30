@@ -35,7 +35,7 @@ export function ReportersTable({
     <div className="rounded-box bg-base-100 p-4 shadow-sm">
       <TableToolbar state={state} setState={setState} showAvailability />
       <div className="overflow-x-auto">
-        <table className="table table-sm">
+        <table className="table table-sm" data-testid="reporters-table">
           <thead>
             <tr>
               <th>
@@ -63,7 +63,7 @@ export function ReportersTable({
           </thead>
           <tbody>
             {data?.data.map((reporter) => (
-              <tr key={reporter.id}>
+              <tr key={reporter.id} data-testid="reporter-row" data-name={reporter.name}>
                 <td>{reporter.name}</td>
                 <td>{reporter.location}</td>
                 <td>
@@ -75,6 +75,7 @@ export function ReportersTable({
                     <button
                       className="btn btn-ghost btn-xs"
                       type="button"
+                      data-testid="reporter-edit-button"
                       onClick={() => onEdit(reporter)}
                     >
                       Edit
@@ -82,6 +83,7 @@ export function ReportersTable({
                     <button
                       className="btn btn-ghost btn-xs text-error"
                       type="button"
+                      data-testid="reporter-delete-button"
                       onClick={() => onDelete(reporter)}
                     >
                       Delete
