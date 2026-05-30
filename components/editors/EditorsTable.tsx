@@ -33,7 +33,7 @@ export function EditorsTable({
     <div className="rounded-box bg-base-100 p-4 shadow-sm">
       <TableToolbar state={state} setState={setState} showAvailability />
       <div className="overflow-x-auto">
-        <table className="table table-sm">
+        <table className="table table-sm" data-testid="editors-table">
           <thead>
             <tr>
               <th>
@@ -56,7 +56,7 @@ export function EditorsTable({
           </thead>
           <tbody>
             {data?.data.map((editor) => (
-              <tr key={editor.id}>
+              <tr key={editor.id} data-testid="editor-row" data-name={editor.name}>
                 <td>{editor.name}</td>
                 <td>
                   <AvailabilityBadge value={editor.availability} />
@@ -67,6 +67,7 @@ export function EditorsTable({
                     <button
                       className="btn btn-ghost btn-xs"
                       type="button"
+                      data-testid="editor-edit-button"
                       onClick={() => onEdit(editor)}
                     >
                       Edit
@@ -74,6 +75,7 @@ export function EditorsTable({
                     <button
                       className="btn btn-ghost btn-xs text-error"
                       type="button"
+                      data-testid="editor-delete-button"
                       onClick={() => onDelete(editor)}
                     >
                       Delete

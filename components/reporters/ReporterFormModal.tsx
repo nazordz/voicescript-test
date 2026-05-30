@@ -71,18 +71,19 @@ export function ReporterFormModal({
   });
 
   return (
-    <dialog className="modal" open={open}>
+    <dialog className="modal" open={open} data-testid="reporter-form-modal">
       <div className="modal-box">
         <h3 className="text-lg font-bold">
           {reporter ? "Edit reporter" : "New reporter"}
         </h3>
         {errors.root ? (
-          <div className="alert alert-error mt-3 text-sm">
+          <div className="alert alert-error mt-3 text-sm" data-testid="reporter-form-error">
             {errors.root.message}
           </div>
         ) : null}
         <form
           className="mt-4 flex flex-col gap-3"
+          data-testid="reporter-form"
           onSubmit={handleSubmit((values) => save.mutate(values))}
           noValidate
         >
@@ -91,10 +92,13 @@ export function ReporterFormModal({
             <input
               className={`input w-full${errors.name ? " input-error" : ""}`}
               aria-invalid={errors.name ? "true" : "false"}
+              data-testid="reporter-form-name"
               {...register("name")}
             />
             {errors.name ? (
-              <p className="label text-error">{errors.name.message}</p>
+              <p className="label text-error" data-testid="reporter-form-name-error">
+                {errors.name.message}
+              </p>
             ) : null}
           </fieldset>
           <fieldset className="fieldset">
@@ -102,6 +106,7 @@ export function ReporterFormModal({
             <select
               className={`select w-full${errors.location ? " select-error" : ""}`}
               aria-invalid={errors.location ? "true" : "false"}
+              data-testid="reporter-form-location"
               {...register("location")}
             >
               {INDONESIAN_CITIES.map((city) => (
@@ -116,17 +121,24 @@ export function ReporterFormModal({
             <input
               className="toggle toggle-primary"
               type="checkbox"
+              data-testid="reporter-form-availability"
               {...register("availability")}
             />
             <span className="label-text">Available</span>
           </label>
           <div className="modal-action mt-2">
-            <button className="btn btn-ghost" type="button" onClick={onClose}>
+            <button
+              className="btn btn-ghost"
+              type="button"
+              data-testid="reporter-form-cancel"
+              onClick={onClose}
+            >
               Cancel
             </button>
             <button
               className="btn btn-primary"
               type="submit"
+              data-testid="reporter-form-submit"
               disabled={save.isPending}
             >
               {save.isPending ? (

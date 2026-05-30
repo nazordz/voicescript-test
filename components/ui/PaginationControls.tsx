@@ -16,7 +16,7 @@ export function PaginationControls({
 
   return (
     <div className="flex flex-col gap-3 border-t border-base-300 pt-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="text-sm text-base-content/70">
+      <div className="text-sm text-base-content/70" data-testid="pagination-info">
         Page {page} of {totalPages} · {pagination?.totalItems ?? 0} rows
       </div>
       <div className="join">
@@ -24,12 +24,14 @@ export function PaginationControls({
           className="btn join-item btn-sm"
           disabled={page <= 1}
           type="button"
+          data-testid="pagination-prev"
           onClick={() => setStateAction({ ...state, page: page - 1 })}
         >
           Prev
         </button>
         <select
           className="select join-item select-sm w-20"
+          data-testid="pagination-page-size"
           value={state.pageSize}
           onChange={(event) =>
             setStateAction({ ...state, page: 1, pageSize: Number(event.target.value) })
@@ -45,6 +47,7 @@ export function PaginationControls({
           className="btn join-item btn-sm"
           disabled={page >= totalPages}
           type="button"
+          data-testid="pagination-next"
           onClick={() => setStateAction({ ...state, page: page + 1 })}
         >
           Next

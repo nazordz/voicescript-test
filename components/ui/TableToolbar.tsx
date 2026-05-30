@@ -23,6 +23,7 @@ export function TableToolbar({
       <input
         className="input input-bordered input-sm"
         placeholder="Search"
+        data-testid="search-input"
         value={state.search}
         onChange={(event) =>
           setState({ ...state, page: 1, search: event.target.value })
@@ -31,6 +32,7 @@ export function TableToolbar({
       {showAvailability ? (
         <select
           className="select select-bordered select-sm"
+          data-testid="filter-availability"
           value={state.availability}
           onChange={(event) =>
             setState({ ...state, page: 1, availability: event.target.value })
@@ -44,6 +46,7 @@ export function TableToolbar({
       {showLocation ? (
         <select
           className="select select-bordered select-sm"
+          data-testid="filter-location"
           value={state.location}
           onChange={(event) =>
             setState({ ...state, page: 1, location: event.target.value })
@@ -58,6 +61,7 @@ export function TableToolbar({
       {showStatus ? (
         <select
           className="select select-bordered select-sm"
+          data-testid="filter-status"
           value={state.status}
           onChange={(event) =>
             setState({ ...state, page: 1, status: event.target.value })
@@ -74,6 +78,7 @@ export function TableToolbar({
       {showRemote ? (
         <select
           className="select select-bordered select-sm"
+          data-testid="filter-remote"
           value={state.isRemote}
           onChange={(event) =>
             setState({ ...state, page: 1, isRemote: event.target.value })

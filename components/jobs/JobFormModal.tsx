@@ -71,16 +71,17 @@ export function JobFormModal({
   });
 
   return (
-    <dialog className="modal" open={open}>
+    <dialog className="modal" open={open} data-testid="job-form-modal">
       <div className="modal-box max-w-lg">
         <h3 className="text-lg font-bold">{job ? "Edit job" : "New job"}</h3>
         {errors.root ? (
-          <div className="alert alert-error mt-3 text-sm">
+          <div className="alert alert-error mt-3 text-sm" data-testid="job-form-error">
             {errors.root.message}
           </div>
         ) : null}
         <form
           className="mt-4 flex flex-col gap-3"
+          data-testid="job-form"
           onSubmit={handleSubmit((values) => save.mutate(values))}
           noValidate
         >
@@ -89,10 +90,13 @@ export function JobFormModal({
             <input
               className={`input w-full${errors.caseName ? " input-error" : ""}`}
               aria-invalid={errors.caseName ? "true" : "false"}
+              data-testid="job-form-case-name"
               {...register("caseName")}
             />
             {errors.caseName ? (
-              <p className="label text-error">{errors.caseName.message}</p>
+              <p className="label text-error" data-testid="job-form-case-name-error">
+                {errors.caseName.message}
+              </p>
             ) : null}
           </fieldset>
           <div className="grid grid-cols-2 gap-3">
@@ -103,6 +107,7 @@ export function JobFormModal({
                 aria-invalid={errors.durationMinutes ? "true" : "false"}
                 min={1}
                 type="number"
+                data-testid="job-form-duration"
                 {...register("durationMinutes", { valueAsNumber: true })}
               />
               {errors.durationMinutes ? (
@@ -116,6 +121,7 @@ export function JobFormModal({
               <select
                 className={`select w-full${errors.location ? " select-error" : ""}`}
                 aria-invalid={errors.location ? "true" : "false"}
+                data-testid="job-form-location"
                 {...register("location")}
               >
                 {INDONESIAN_CITIES.map((city) => (
@@ -131,6 +137,7 @@ export function JobFormModal({
             <input
               className="toggle toggle-primary"
               type="checkbox"
+              data-testid="job-form-remote"
               {...register("isRemote")}
             />
             <span className="label-text">Remote</span>
@@ -143,6 +150,7 @@ export function JobFormModal({
                 aria-invalid={errors.reporterRateIdr ? "true" : "false"}
                 min={0}
                 type="number"
+                data-testid="job-form-reporter-rate"
                 {...register("reporterRateIdr", { valueAsNumber: true })}
               />
               {errors.reporterRateIdr ? (
@@ -158,6 +166,7 @@ export function JobFormModal({
                 aria-invalid={errors.editorFeeIdr ? "true" : "false"}
                 min={0}
                 type="number"
+                data-testid="job-form-editor-fee"
                 {...register("editorFeeIdr", { valueAsNumber: true })}
               />
               {errors.editorFeeIdr ? (
@@ -168,12 +177,18 @@ export function JobFormModal({
             </fieldset>
           </div>
           <div className="modal-action mt-2">
-            <button className="btn btn-ghost" type="button" onClick={onClose}>
+            <button
+              className="btn btn-ghost"
+              type="button"
+              data-testid="job-form-cancel"
+              onClick={onClose}
+            >
               Cancel
             </button>
             <button
               className="btn btn-primary"
               type="submit"
+              data-testid="job-form-submit"
               disabled={save.isPending}
             >
               {save.isPending ? (
