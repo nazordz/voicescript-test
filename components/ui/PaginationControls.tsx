@@ -5,11 +5,11 @@ import type { ListState, Pagination } from "@/lib/types";
 export function PaginationControls({
   pagination,
   state,
-  setState,
+  setStateAction,
 }: {
   pagination?: Pagination;
   state: ListState;
-  setState: (next: ListState) => void;
+  setStateAction: (next: ListState) => void;
 }) {
   const page = pagination?.page ?? state.page;
   const totalPages = pagination?.totalPages ?? 1;
@@ -24,7 +24,7 @@ export function PaginationControls({
           className="btn join-item btn-sm"
           disabled={page <= 1}
           type="button"
-          onClick={() => setState({ ...state, page: page - 1 })}
+          onClick={() => setStateAction({ ...state, page: page - 1 })}
         >
           Prev
         </button>
@@ -32,7 +32,7 @@ export function PaginationControls({
           className="select join-item select-sm w-20"
           value={state.pageSize}
           onChange={(event) =>
-            setState({ ...state, page: 1, pageSize: Number(event.target.value) })
+            setStateAction({ ...state, page: 1, pageSize: Number(event.target.value) })
           }
         >
           {[5, 10, 20, 50].map((size) => (
@@ -45,7 +45,7 @@ export function PaginationControls({
           className="btn join-item btn-sm"
           disabled={page >= totalPages}
           type="button"
-          onClick={() => setState({ ...state, page: page + 1 })}
+          onClick={() => setStateAction({ ...state, page: page + 1 })}
         >
           Next
         </button>

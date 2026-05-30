@@ -1,22 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { INDONESIAN_CITIES } from "@/lib/constants";
 import { requestJson } from "@/lib/api-client";
+import {
+  reporterFormDefaults,
+  reporterFormSchema,
+  type ReporterFormValues,
+} from "@/lib/form-schemas";
 import type { Reporter } from "@/lib/types";
-
-type FormState = {
-  name: string;
-  location: string;
-  availability: boolean;
-};
-
-const defaultForm: FormState = {
-  name: "",
-  location: "Jakarta",
-  availability: true,
-};
 
 export function ReporterFormModal({
   open,
@@ -30,27 +25,38 @@ export function ReporterFormModal({
   onSuccess: () => void;
 }) {
   const queryClient = useQueryClient();
-  const [form, setForm] = useState<FormState>(defaultForm);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError: setFormError,
+    formState: { errors },
+  } = useForm<ReporterFormValues>({
+    resolver: zodResolver(reporterFormSchema),
+    defaultValues: reporterFormDefaults,
+  });
 
   useEffect(() => {
     if (open) {
-      setError(null);
-      setForm(
+      reset(
         reporter
-          ? { name: reporter.name, location: reporter.location, availability: reporter.availability }
-          : defaultForm,
+          ? {
+              name: reporter.name,
+              location: reporter.location,
+              availability: reporter.availability,
+            }
+          : reporterFormDefaults,
       );
     }
-  }, [open, reporter]);
+  }, [open, reporter, reset]);
 
   const save = useMutation({
-    mutationFn: () =>
+    mutationFn: (values: ReporterFormValues) =>
       requestJson<Reporter>(
         reporter ? `/api/reporters/${reporter.id}` : "/api/reporters",
         {
           method: reporter ? "PATCH" : "POST",
-          data: form,
+          data: values,
         },
       ),
     onSuccess: async () => {
@@ -59,14 +65,10 @@ export function ReporterFormModal({
       onClose();
     },
     onError: (err) =>
-      setError(err instanceof Error ? err.message : "Save failed"),
+      setFormError("root", {
+        message: err instanceof Error ? err.message : "Save failed",
+      }),
   });
-
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError(null);
-    save.mutate();
-  }
 
   return (
     <dialog className="modal" open={open}>
@@ -74,48 +76,52 @@ export function ReporterFormModal({
         <h3 className="text-lg font-bold">
           {reporter ? "Edit reporter" : "New reporter"}
         </h3>
-        {error ? (
-          <div className="alert alert-error mt-3 text-sm">{error}</div>
+        {errors.root ? (
+          <div className="alert alert-error mt-3 text-sm">
+            {errors.root.message}
+          </div>
         ) : null}
-        <form className="mt-4 flex flex-col gap-3" onSubmit={handleSubmit}>
+        <form
+          className="mt-4 flex flex-col gap-3"
+          onSubmit={handleSubmit((values) => save.mutate(values))}
+          noValidate
+        >
           <fieldset className="fieldset">
             <legend className="fieldset-legend">Name</legend>
             <input
-              className="input w-full"
-              required
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className={`input w-full${errors.name ? " input-error" : ""}`}
+              aria-invalid={errors.name ? "true" : "false"}
+              {...register("name")}
             />
+            {errors.name ? (
+              <p className="label text-error">{errors.name.message}</p>
+            ) : null}
           </fieldset>
           <fieldset className="fieldset">
             <legend className="fieldset-legend">Location</legend>
             <select
-              className="select w-full"
-              value={form.location}
-              onChange={(e) => setForm({ ...form, location: e.target.value })}
+              className={`select w-full${errors.location ? " select-error" : ""}`}
+              aria-invalid={errors.location ? "true" : "false"}
+              {...register("location")}
             >
               {INDONESIAN_CITIES.map((city) => (
                 <option key={city}>{city}</option>
               ))}
             </select>
+            {errors.location ? (
+              <p className="label text-error">{errors.location.message}</p>
+            ) : null}
           </fieldset>
           <label className="label cursor-pointer justify-start gap-3">
             <input
               className="toggle toggle-primary"
               type="checkbox"
-              checked={form.availability}
-              onChange={(e) =>
-                setForm({ ...form, availability: e.target.checked })
-              }
+              {...register("availability")}
             />
             <span className="label-text">Available</span>
           </label>
           <div className="modal-action mt-2">
-            <button
-              className="btn btn-ghost"
-              type="button"
-              onClick={onClose}
-            >
+            <button className="btn btn-ghost" type="button" onClick={onClose}>
               Cancel
             </button>
             <button

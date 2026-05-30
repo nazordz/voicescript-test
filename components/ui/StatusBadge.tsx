@@ -6,6 +6,7 @@ const STATUS_CLASSES: Record<number, string> = {
   [JOB_STATUS.TRANSCRIBED]: "badge-warning",
   [JOB_STATUS.REVIEWED]: "badge-secondary",
   [JOB_STATUS.COMPLETED]: "badge-success",
+  [JOB_STATUS.CANCELLED]: "badge-error",
 };
 
 export function StatusBadge({ status }: { status: number }) {

@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@hookform/resolvers": "^5.4.0",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "7.8.0",
     "@prisma/client-runtime-utils": "^7.8.0",
@@ -27,11 +28,13 @@
     "pg": "^8.21.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "react-hook-form": "^7.76.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
+    "@tanstack/react-query-devtools": "^5.100.14",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -40,6 +43,7 @@
     "eslint-config-next": "16.2.6",
     "prisma": "7.8.0",
     "tailwindcss": "^4",
+    "testcontainers": "^12.0.1",
     "tsx": "^4.20.6",
     "typescript": "^5"
   }

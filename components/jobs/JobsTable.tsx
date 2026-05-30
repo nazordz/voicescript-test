@@ -55,6 +55,7 @@ export function JobsTable({
                   Location
                 </SortButton>
               </th>
+              <th>Remote</th>
               <th>Reporter</th>
               <th>Editor</th>
               <th>Total</th>
@@ -78,6 +79,13 @@ export function JobsTable({
                   <StatusBadge status={job.status} />
                 </td>
                 <td>{job.location}</td>
+                <td>
+                  {job.isRemote ? (
+                    <span className="badge badge-info badge-sm">Remote</span>
+                  ) : (
+                    "—"
+                  )}
+                </td>
                 <td>{job.reporter?.name ?? "—"}</td>
                 <td>{job.editor?.name ?? "—"}</td>
                 <td>{formatIdr(job.payments.totalPayoutIdr)}</td>
@@ -90,7 +98,7 @@ export function JobsTable({
       <PaginationControls
         pagination={data?.pagination}
         state={state}
-        setState={setState}
+        setStateAction={setState}
       />
     </div>
   );

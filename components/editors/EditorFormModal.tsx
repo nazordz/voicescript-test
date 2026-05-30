@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { requestJson } from "@/lib/api-client";
+import {
+  editorFormDefaults,
+  editorFormSchema,
+  type EditorFormValues,
+} from "@/lib/form-schemas";
 import type { Editor } from "@/lib/types";
-
-type FormState = {
-  name: string;
-  availability: boolean;
-};
-
-const defaultForm: FormState = { name: "", availability: true };
 
 export function EditorFormModal({
   open,
@@ -24,27 +24,34 @@ export function EditorFormModal({
   onSuccess: () => void;
 }) {
   const queryClient = useQueryClient();
-  const [form, setForm] = useState<FormState>(defaultForm);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError: setFormError,
+    formState: { errors },
+  } = useForm<EditorFormValues>({
+    resolver: zodResolver(editorFormSchema),
+    defaultValues: editorFormDefaults,
+  });
 
   useEffect(() => {
     if (open) {
-      setError(null);
-      setForm(
+      reset(
         editor
           ? { name: editor.name, availability: editor.availability }
-          : defaultForm,
+          : editorFormDefaults,
       );
     }
-  }, [open, editor]);
+  }, [open, editor, reset]);
 
   const save = useMutation({
-    mutationFn: () =>
+    mutationFn: (values: EditorFormValues) =>
       requestJson<Editor>(
         editor ? `/api/editors/${editor.id}` : "/api/editors",
         {
           method: editor ? "PATCH" : "POST",
-          data: form,
+          data: values,
         },
       ),
     onSuccess: async () => {
@@ -53,14 +60,10 @@ export function EditorFormModal({
       onClose();
     },
     onError: (err) =>
-      setError(err instanceof Error ? err.message : "Save failed"),
+      setFormError("root", {
+        message: err instanceof Error ? err.message : "Save failed",
+      }),
   });
-
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError(null);
-    save.mutate();
-  }
 
   return (
     <dialog className="modal" open={open}>
@@ -68,27 +71,32 @@ export function EditorFormModal({
         <h3 className="text-lg font-bold">
           {editor ? "Edit editor" : "New editor"}
         </h3>
-        {error ? (
-          <div className="alert alert-error mt-3 text-sm">{error}</div>
+        {errors.root ? (
+          <div className="alert alert-error mt-3 text-sm">
+            {errors.root.message}
+          </div>
         ) : null}
-        <form className="mt-4 flex flex-col gap-3" onSubmit={handleSubmit}>
+        <form
+          className="mt-4 flex flex-col gap-3"
+          onSubmit={handleSubmit((values) => save.mutate(values))}
+          noValidate
+        >
           <fieldset className="fieldset">
             <legend className="fieldset-legend">Name</legend>
             <input
-              className="input w-full"
-              required
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className={`input w-full${errors.name ? " input-error" : ""}`}
+              aria-invalid={errors.name ? "true" : "false"}
+              {...register("name")}
             />
+            {errors.name ? (
+              <p className="label text-error">{errors.name.message}</p>
+            ) : null}
           </fieldset>
           <label className="label cursor-pointer justify-start gap-3">
             <input
               className="toggle toggle-primary"
               type="checkbox"
-              checked={form.availability}
-              onChange={(e) =>
-                setForm({ ...form, availability: e.target.checked })
-              }
+              {...register("availability")}
             />
             <span className="label-text">Available</span>
           </label>

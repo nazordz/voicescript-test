@@ -35,6 +35,7 @@ Goal: Build a simplified workflow system for managing transcription jobs
 A court reporting agency receives audio recordings.
 
 They need to:
+
 1. Assign jobs to court reporters
 2. Assign editors to review transcripts
 3. Track job status
@@ -91,37 +92,42 @@ criterias:
 **Backend Requirements:**
 REST API backend in nextjs:
 
-create job
-  - assign reporter/editor
-  - update status
-  - calculate payment
+create job:
+
+- assign reporter/editor
+- update status
+- calculate payment
 
 Use:
-  - Node.js + TypeScript
-  - Prisma + postgres
 
-Create migrations and seeders with prisma
-  1. editors
-  2. reporters
-     1. location (city_name)
-  3. jobs
+- Node.js + TypeScript
+- Prisma + postgres
 
+Create migrations and seeders with prisma:
+
+1. editors
+2. reporters
+    1. location (city_name)
+3. jobs
 
 Rules:
-  - use smallint for column status and location in table jobs
-  - create CRUDs and also UI for table and form
-    - rules:
-      1. add filter and sorting
-      2. add search with debounce
-    - tables:
-      2. editors
-      3. reporters
-      4. jobs
-  - update e2e with playwright in folder ./tests
-  - use snake_case for column names in table
+
+- use smallint for column status and location in table jobs
+- create CRUDs and also UI for table and form
+  - rules:
+    1. add filter and sorting
+    2. add search with debounce
+  - tables:
+    2. editors
+    3. reporters
+    4. jobs
+- update e2e with playwright in folder ./tests
+- use snake_case for column names in table
+
 ---
 
 tech stacks:
+
 - prisma for:
   - migration
   - models
@@ -132,5 +138,12 @@ tech stacks:
 - dayjs
 
 mcp tools:
+
 - postgres-mcp
 - context7
+
+## Notes
+
+The improvised changes are listed below:
+
+1. I added new job status **CANCELLED** if user want to cancel/remove it.

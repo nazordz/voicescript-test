@@ -47,9 +47,21 @@ export function serializeJob(job: JobWithRelations) {
   };
 }
 
+export function isCancellable(status: number) {
+  return (
+    isJobStatus(status) &&
+    status !== JOB_STATUS.COMPLETED &&
+    status !== JOB_STATUS.CANCELLED
+  );
+}
+
 export function assertNextStatus(current: number, next: number) {
   if (!isJobStatus(current) || !isJobStatus(next)) {
     return false;
+  }
+
+  if (next === JOB_STATUS.CANCELLED) {
+    return isCancellable(current);
   }
 
   return NEXT_JOB_STATUS[current] === next;

@@ -1,29 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { INDONESIAN_CITIES } from "@/lib/constants";
-import { DEFAULT_REPORTER_RATE_IDR, DEFAULT_EDITOR_FEE_IDR } from "@/lib/constants";
 import { requestJson } from "@/lib/api-client";
+import {
+  jobFormDefaults,
+  jobFormSchema,
+  type JobFormValues,
+} from "@/lib/form-schemas";
 import type { Job } from "@/lib/types";
-
-type FormState = {
-  caseName: string;
-  durationMinutes: number;
-  location: string;
-  isRemote: boolean;
-  reporterRateIdr: number;
-  editorFeeIdr: number;
-};
-
-const defaultForm: FormState = {
-  caseName: "",
-  durationMinutes: 60,
-  location: "Jakarta",
-  isRemote: false,
-  reporterRateIdr: DEFAULT_REPORTER_RATE_IDR,
-  editorFeeIdr: DEFAULT_EDITOR_FEE_IDR,
-};
 
 export function JobFormModal({
   open,
@@ -37,13 +25,20 @@ export function JobFormModal({
   onSuccess: (saved: Job) => void;
 }) {
   const queryClient = useQueryClient();
-  const [form, setForm] = useState<FormState>(defaultForm);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError: setFormError,
+    formState: { errors },
+  } = useForm<JobFormValues>({
+    resolver: zodResolver(jobFormSchema),
+    defaultValues: jobFormDefaults,
+  });
 
   useEffect(() => {
     if (open) {
-      setError(null);
-      setForm(
+      reset(
         job
           ? {
               caseName: job.caseName,
@@ -53,21 +48,16 @@ export function JobFormModal({
               reporterRateIdr: job.reporterRateIdr,
               editorFeeIdr: job.editorFeeIdr,
             }
-          : defaultForm,
+          : jobFormDefaults,
       );
     }
-  }, [open, job]);
+  }, [open, job, reset]);
 
   const save = useMutation({
-    mutationFn: () =>
+    mutationFn: (values: JobFormValues) =>
       requestJson<Job>(job ? `/api/jobs/${job.id}` : "/api/jobs", {
         method: job ? "PATCH" : "POST",
-        data: {
-          ...form,
-          durationMinutes: Number(form.durationMinutes),
-          reporterRateIdr: Number(form.reporterRateIdr),
-          editorFeeIdr: Number(form.editorFeeIdr),
-        },
+        data: values,
       }),
     onSuccess: async (saved) => {
       await queryClient.invalidateQueries({ queryKey: ["jobs"] });
@@ -75,66 +65,73 @@ export function JobFormModal({
       onClose();
     },
     onError: (err) =>
-      setError(err instanceof Error ? err.message : "Save failed"),
+      setFormError("root", {
+        message: err instanceof Error ? err.message : "Save failed",
+      }),
   });
-
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError(null);
-    save.mutate();
-  }
 
   return (
     <dialog className="modal" open={open}>
       <div className="modal-box max-w-lg">
         <h3 className="text-lg font-bold">{job ? "Edit job" : "New job"}</h3>
-        {error ? (
-          <div className="alert alert-error mt-3 text-sm">{error}</div>
+        {errors.root ? (
+          <div className="alert alert-error mt-3 text-sm">
+            {errors.root.message}
+          </div>
         ) : null}
-        <form className="mt-4 flex flex-col gap-3" onSubmit={handleSubmit}>
+        <form
+          className="mt-4 flex flex-col gap-3"
+          onSubmit={handleSubmit((values) => save.mutate(values))}
+          noValidate
+        >
           <fieldset className="fieldset">
             <legend className="fieldset-legend">Case name</legend>
             <input
-              className="input w-full"
-              required
-              value={form.caseName}
-              onChange={(e) => setForm({ ...form, caseName: e.target.value })}
+              className={`input w-full${errors.caseName ? " input-error" : ""}`}
+              aria-invalid={errors.caseName ? "true" : "false"}
+              {...register("caseName")}
             />
+            {errors.caseName ? (
+              <p className="label text-error">{errors.caseName.message}</p>
+            ) : null}
           </fieldset>
           <div className="grid grid-cols-2 gap-3">
             <fieldset className="fieldset">
               <legend className="fieldset-legend">Minutes</legend>
               <input
-                className="input w-full"
+                className={`input w-full${errors.durationMinutes ? " input-error" : ""}`}
+                aria-invalid={errors.durationMinutes ? "true" : "false"}
                 min={1}
                 type="number"
-                value={form.durationMinutes}
-                onChange={(e) =>
-                  setForm({ ...form, durationMinutes: Number(e.target.value) })
-                }
+                {...register("durationMinutes", { valueAsNumber: true })}
               />
+              {errors.durationMinutes ? (
+                <p className="label text-error">
+                  {errors.durationMinutes.message}
+                </p>
+              ) : null}
             </fieldset>
             <fieldset className="fieldset">
               <legend className="fieldset-legend">Location</legend>
               <select
-                className="select w-full"
-                value={form.location}
-                onChange={(e) =>
-                  setForm({ ...form, location: e.target.value })
-                }
+                className={`select w-full${errors.location ? " select-error" : ""}`}
+                aria-invalid={errors.location ? "true" : "false"}
+                {...register("location")}
               >
                 {INDONESIAN_CITIES.map((city) => (
                   <option key={city}>{city}</option>
                 ))}
               </select>
+              {errors.location ? (
+                <p className="label text-error">{errors.location.message}</p>
+              ) : null}
             </fieldset>
           </div>
           <label className="label cursor-pointer justify-start gap-3">
             <input
               className="toggle toggle-primary"
               type="checkbox"
-              checked={form.isRemote}
-              onChange={(e) => setForm({ ...form, isRemote: e.target.checked })}
+              {...register("isRemote")}
             />
             <span className="label-text">Remote</span>
           </label>
@@ -142,26 +139,32 @@ export function JobFormModal({
             <fieldset className="fieldset">
               <legend className="fieldset-legend">Reporter rate (IDR)</legend>
               <input
-                className="input w-full"
+                className={`input w-full${errors.reporterRateIdr ? " input-error" : ""}`}
+                aria-invalid={errors.reporterRateIdr ? "true" : "false"}
                 min={0}
                 type="number"
-                value={form.reporterRateIdr}
-                onChange={(e) =>
-                  setForm({ ...form, reporterRateIdr: Number(e.target.value) })
-                }
+                {...register("reporterRateIdr", { valueAsNumber: true })}
               />
+              {errors.reporterRateIdr ? (
+                <p className="label text-error">
+                  {errors.reporterRateIdr.message}
+                </p>
+              ) : null}
             </fieldset>
             <fieldset className="fieldset">
               <legend className="fieldset-legend">Editor fee (IDR)</legend>
               <input
-                className="input w-full"
+                className={`input w-full${errors.editorFeeIdr ? " input-error" : ""}`}
+                aria-invalid={errors.editorFeeIdr ? "true" : "false"}
                 min={0}
                 type="number"
-                value={form.editorFeeIdr}
-                onChange={(e) =>
-                  setForm({ ...form, editorFeeIdr: Number(e.target.value) })
-                }
+                {...register("editorFeeIdr", { valueAsNumber: true })}
               />
+              {errors.editorFeeIdr ? (
+                <p className="label text-error">
+                  {errors.editorFeeIdr.message}
+                </p>
+              ) : null}
             </fieldset>
           </div>
           <div className="modal-action mt-2">

@@ -97,7 +97,7 @@ export function ReportersTable({
       <PaginationControls
         pagination={data?.pagination}
         state={state}
-        setState={setState}
+        setStateAction={setState}
       />
     </div>
   );

@@ -1,12 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { JOB_STATUS_LABELS, NEXT_JOB_STATUS } from "@/lib/constants";
+import { JOB_STATUS, JOB_STATUS_LABELS, NEXT_JOB_STATUS } from "@/lib/constants";
 import { formatIdr, requestJson } from "@/lib/api-client";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import type { Editor, Job, ListResponse, Reporter } from "@/lib/types";
+
+type ActionFormValues = {
+  reporterId: string;
+  editorId: string;
+  editorFee: number;
+};
 
 export function JobDetail({
   job,
@@ -22,9 +28,13 @@ export function JobDetail({
     method?: "POST" | "PATCH";
   }) => void;
 }) {
-  const [reporterId, setReporterId] = useState("");
-  const [editorId, setEditorId] = useState("");
-  const [editorFee, setEditorFee] = useState(50000);
+  const {
+    register,
+    getValues,
+    formState: { dirtyFields },
+  } = useForm<ActionFormValues>({
+    defaultValues: { reporterId: "", editorId: "", editorFee: 50000 },
+  });
 
   const reporters = useQuery({
     queryKey: ["reporters", "options"],
@@ -45,6 +55,9 @@ export function JobDetail({
   if (!job) return null;
 
   const nextStatus = NEXT_JOB_STATUS[job.status as keyof typeof NEXT_JOB_STATUS];
+  const canCancel =
+    job.status !== JOB_STATUS.COMPLETED && job.status !== JOB_STATUS.CANCELLED;
+  const canAssignEditor = job.status === JOB_STATUS.TRANSCRIBED;
 
   return (
     <div className="mt-4 rounded-box bg-base-100 p-4 shadow-sm">
@@ -72,8 +85,7 @@ export function JobDetail({
           <h3 className="mb-3 font-medium">Reporter</h3>
           <select
             className="select select-bordered mb-3 w-full"
-            value={reporterId}
-            onChange={(e) => setReporterId(e.target.value)}
+            {...register("reporterId")}
           >
             <option value="">Auto assign</option>
             {reporters.data?.data
@@ -87,13 +99,14 @@ export function JobDetail({
           <button
             className="btn btn-primary btn-sm w-full"
             type="button"
-            onClick={() =>
+            onClick={() => {
+              const reporterId = getValues("reporterId");
               onAction({
                 id: job.id,
                 path: "assign-reporter",
                 body: reporterId ? { reporterId } : {},
-              })
-            }
+              });
+            }}
           >
             Assign reporter
           </button>
@@ -101,9 +114,13 @@ export function JobDetail({
         <div className="rounded-box border border-base-300 p-3">
           <h3 className="mb-3 font-medium">Editor</h3>
           <select
-            className="select select-bordered mb-3 w-full"
-            value={editorId}
-            onChange={(e) => setEditorId(e.target.value)}
+            className={`select select-bordered mb-3 w-full${
+              dirtyFields.editorId && !canAssignEditor ? " select-error" : ""
+            }`}
+            aria-invalid={
+              dirtyFields.editorId && !canAssignEditor ? "true" : "false"
+            }
+            {...register("editorId")}
           >
             <option value="">Auto assign</option>
             {editors.data?.data
@@ -117,25 +134,34 @@ export function JobDetail({
           <button
             className="btn btn-secondary btn-sm w-full"
             type="button"
-            onClick={() =>
+            disabled={!canAssignEditor}
+            aria-disabled={!canAssignEditor}
+            onClick={() => {
+              const editorId = getValues("editorId");
               onAction({
                 id: job.id,
                 path: "assign-editor",
                 body: editorId ? { editorId } : {},
-              })
-            }
+              });
+            }}
           >
             Assign editor
           </button>
+          {dirtyFields.editorId && !canAssignEditor ? (
+            <p className="label mt-2 text-error">
+              Editor can only be assigned when the job is{" "}
+              {JOB_STATUS_LABELS[JOB_STATUS.TRANSCRIBED]} (current:{" "}
+              {JOB_STATUS_LABELS[job.status as keyof typeof JOB_STATUS_LABELS]}).
+            </p>
+          ) : null}
         </div>
         <div className="rounded-box border border-base-300 p-3">
-          <h3 className="mb-3 font-medium">Payment</h3>
+          <h3 className="mb-3 font-medium">Payment for editor</h3>
           <input
             className="input input-bordered mb-3 w-full"
             min={0}
             type="number"
-            value={editorFee}
-            onChange={(e) => setEditorFee(Number(e.target.value))}
+            {...register("editorFee", { valueAsNumber: true })}
           />
           <button
             className="btn btn-accent btn-sm w-full"
@@ -145,7 +171,7 @@ export function JobDetail({
                 id: job.id,
                 path: "payments",
                 method: "PATCH",
-                body: { editorFeeIdr: editorFee },
+                body: { editorFeeIdr: getValues("editorFee") },
               })
             }
           >
@@ -175,24 +201,44 @@ export function JobDetail({
               </div>
             </div>
           </div>
-          {nextStatus !== undefined ? (
-            <button
-              className="btn btn-success mt-4"
-              type="button"
-              onClick={() =>
-                onAction({
-                  id: job.id,
-                  path: "status",
-                  body: {
-                    status: nextStatus,
-                    note: `Moved to ${JOB_STATUS_LABELS[nextStatus]}.`,
-                  },
-                })
-              }
-            >
-              Move to {JOB_STATUS_LABELS[nextStatus]}
-            </button>
-          ) : null}
+          <div className="mt-4 flex flex-wrap gap-2">
+            {nextStatus !== undefined ? (
+              <button
+                className="btn btn-success"
+                type="button"
+                onClick={() =>
+                  onAction({
+                    id: job.id,
+                    path: "status",
+                    body: {
+                      status: nextStatus,
+                      note: `Moved to ${JOB_STATUS_LABELS[nextStatus]}.`,
+                    },
+                  })
+                }
+              >
+                Move to {JOB_STATUS_LABELS[nextStatus]}
+              </button>
+            ) : null}
+            {canCancel ? (
+              <button
+                className="btn btn-error btn-outline"
+                type="button"
+                onClick={() =>
+                  onAction({
+                    id: job.id,
+                    path: "status",
+                    body: {
+                      status: JOB_STATUS.CANCELLED,
+                      note: `Moved to ${JOB_STATUS_LABELS[JOB_STATUS.CANCELLED]}.`,
+                    },
+                  })
+                }
+              >
+                Cancel job
+              </button>
+            ) : null}
+          </div>
         </div>
         <div>
           <h3 className="mb-3 font-medium">History</h3>

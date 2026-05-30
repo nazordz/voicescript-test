@@ -89,7 +89,7 @@ export function EditorsTable({
       <PaginationControls
         pagination={data?.pagination}
         state={state}
-        setState={setState}
+        setStateAction={setState}
       />
     </div>
   );

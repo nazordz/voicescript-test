@@ -8,6 +8,7 @@ const JOB_STATUS = {
   TRANSCRIBED: 2,
   REVIEWED: 3,
   COMPLETED: 4,
+  CANCELLED: 5,
 } as const;
 
 async function main() {
@@ -116,6 +117,17 @@ async function main() {
     },
   });
 
+  const cancelledJob = await prisma.job.create({
+    data: {
+      caseName: "Withdrawn Hearing Semarang",
+      durationMinutes: 30,
+      location: "Semarang",
+      status: JOB_STATUS.CANCELLED,
+      reporterId: bandungReporter.id,
+      isRemote: false,
+    },
+  });
+
   await prisma.jobStatusHistory.createMany({
     data: [
       {
@@ -207,6 +219,24 @@ async function main() {
         fromStatus: JOB_STATUS.REVIEWED,
         toStatus: JOB_STATUS.COMPLETED,
         note: "Payment finalized.",
+      },
+      {
+        jobId: cancelledJob.id,
+        fromStatus: null,
+        toStatus: JOB_STATUS.NEW,
+        note: "Job created.",
+      },
+      {
+        jobId: cancelledJob.id,
+        fromStatus: JOB_STATUS.NEW,
+        toStatus: JOB_STATUS.ASSIGNED,
+        note: "Assigned to Bandung reporter.",
+      },
+      {
+        jobId: cancelledJob.id,
+        fromStatus: JOB_STATUS.ASSIGNED,
+        toStatus: JOB_STATUS.CANCELLED,
+        note: "Hearing withdrawn by the court.",
       },
     ],
   });

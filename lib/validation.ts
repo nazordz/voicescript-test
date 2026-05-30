@@ -21,7 +21,7 @@ export const listQuerySchema = z.object({
     .optional()
     .transform((value) => (value === undefined ? undefined : value === "true")),
   location: z.string().trim().optional(),
-  status: z.coerce.number().int().min(0).max(4).optional(),
+  status: z.coerce.number().int().min(0).max(5).optional(),
   isRemote: z
     .enum(["true", "false"])
     .optional()
