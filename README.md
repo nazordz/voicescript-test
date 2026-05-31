@@ -57,7 +57,7 @@ pnpm test:e2e:ui
 
 I used AI-assisted tooling for scaffolding and implementation support, but reviewed, tested, and adapted the code myself.
 
-## Brief
+## Technical assessment brief
 
 Title: Court Reporting Workflow Manager
 Goal: Build a simplified workflow system for managing transcription jobs
@@ -180,5 +180,5 @@ The improvised changes or decissions I made are listed below:
 1. I decided to create server-side API endpoints directly in Next.js because, for this assessment test, building a full-stack application this way is easier and helps speed up development.
 2. I decided to create CRUD pages for editors and reporters.
 3. I added new job status **CANCELLED** if user want to cancel/remove it.
-4. Add auto assign option in Job Detail panel to auto-select a reporter in same city as the Job if possible.
+4. Add an auto-assign option in the Job Detail panel to automatically select a reporter in the same city as the job, if possible.
 5. Added e2e tests with playwright by adding attribute 'data-testid', create test scenarios in folder './tests' and implemented testcontainers in playwright test setup.
