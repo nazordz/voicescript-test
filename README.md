@@ -14,7 +14,7 @@ cp .env.example .env
 # boot up only postgres container
 docker compose up postgres -d
 
-# generate prisma client 
+# generate prisma client
 pnpm prisma:generate
 
 # run migration to create tables
@@ -75,28 +75,34 @@ They need to:
 **Required Features**
 
 1. Job Management
-  Create a job:
-  - case_name
-  - duration (minutes)
-  - location (physical / remote)
-  - status
+   Create a job:
+
+- case_name
+- duration (minutes)
+- location (physical / remote)
+- status
   Statuses:
-  ```
-    NEW → ASSIGNED → TRANSCRIBED → REVIEWED → COMPLETED
-  ```
+
+```
+  NEW → ASSIGNED → TRANSCRIBED → REVIEWED → COMPLETED
+```
+
 2. Reporter Assignment
    - Assign job to a reporter
    - Reporter attributes:
      - name
      - location
      - availability
-  - Logic:
-    - Prefer same city for physical jobs
-    - Allow remote assignment
+
+- Logic:
+  - Prefer same city for physical jobs
+  - Allow remote assignment
+
 3. Editor Assignment
    - Assign editor after transcription
    - Track review status
 4. Payment Calculation
+
    ```
    Example rules:
     - Reporter paid per minute (e.g. 2000 IDR/min)
@@ -109,16 +115,18 @@ They need to:
 
 **Frontend Requirements:**
 backoffice:
-  - data reporters + form
-  - data editors + form
-  - main scenario:
-    - create job
-    - job list
-    - change of status and history record
-    - assignments UI
+
+- data reporters + form
+- data editors + form
+- main scenario:
+  - create job
+  - job list
+  - change of status and history record
+  - assignments UI
 
 criterias:
-  - support desktop and mobile screen
+
+- support desktop and mobile screen
 
 **Backend Requirements:**
 REST API backend in nextjs:
@@ -138,7 +146,7 @@ Create migrations and seeders with prisma:
 
 1. editors
 2. reporters
-    1. location (city_name)
+   1. location (city_name)
 3. jobs
 
 Rules:
@@ -148,10 +156,7 @@ Rules:
   - rules:
     1. add filter and sorting
     2. add search with debounce
-  - tables:
-    2. editors
-    3. reporters
-    4. jobs
+  - tables: 2. editors 3. reporters 4. jobs
 - update e2e with playwright in folder ./tests
 - use snake_case for column names in table
 
@@ -172,6 +177,10 @@ mcp tools:
 
 - postgres-mcp
 - context7
+
+## Screenshots
+
+all pages screenshot are in folder [./docs/screenshots](./docs/screenshots)
 
 ## Notes
 
