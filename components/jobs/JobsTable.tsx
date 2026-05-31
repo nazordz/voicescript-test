@@ -12,12 +12,12 @@ import type { Job, ListResponse, ListState } from "@/lib/types";
 
 export function JobsTable({
   state,
-  setState,
-  onSelect,
+  setStateAction,
+  onSelectAction,
 }: {
   state: ListState;
-  setState: (next: ListState) => void;
-  onSelect: (job: Job) => void;
+  setStateAction: (next: ListState) => void;
+  onSelectAction: (job: Job) => void;
 }) {
   const search = useDebouncedValue(state.search);
 
@@ -31,7 +31,7 @@ export function JobsTable({
     <div className="rounded-box bg-base-100 p-4 shadow-sm">
       <TableToolbar
         state={state}
-        setState={setState}
+        setStateAction={setStateAction}
         showLocation
         showStatus
         showRemote
@@ -41,17 +41,17 @@ export function JobsTable({
           <thead>
             <tr>
               <th>
-                <SortButton field="caseName" state={state} setState={setState}>
+                <SortButton field="caseName" state={state} setStateAction={setStateAction}>
                   Case
                 </SortButton>
               </th>
               <th>
-                <SortButton field="status" state={state} setState={setState}>
+                <SortButton field="status" state={state} setStateAction={setStateAction}>
                   Status
                 </SortButton>
               </th>
               <th>
-                <SortButton field="location" state={state} setState={setState}>
+                <SortButton field="location" state={state} setStateAction={setStateAction}>
                   Location
                 </SortButton>
               </th>
@@ -68,7 +68,7 @@ export function JobsTable({
                 key={job.id}
                 data-testid="job-row"
                 data-case-name={job.caseName}
-                onClick={() => onSelect(job)}
+                onClick={() => onSelectAction(job)}
               >
                 <td>
                   <div className="font-medium">{job.caseName}</div>
@@ -100,7 +100,7 @@ export function JobsTable({
       <PaginationControls
         pagination={data?.pagination}
         state={state}
-        setStateAction={setState}
+        setStateAction={setStateAction}
       />
     </div>
   );

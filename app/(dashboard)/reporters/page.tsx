@@ -56,17 +56,17 @@ export default function ReportersPage() {
         <ErrorBanner message={error} />
         <ReportersTable
           state={state}
-          setState={setState}
-          onEdit={(reporter) => setFormModal({ open: true, reporter })}
-          onDelete={(reporter) => setDeleteModal({ open: true, reporter })}
+          setStateAction={setState}
+          onEditAction={(reporter) => setFormModal({ open: true, reporter })}
+          onDeleteAction={(reporter) => setDeleteModal({ open: true, reporter })}
         />
       </Panel>
 
       <ReporterFormModal
         open={formModal.open}
         reporter={formModal.reporter}
-        onClose={() => setFormModal({ open: false, reporter: null })}
-        onSuccess={() => setError(null)}
+        onCloseAction={() => setFormModal({ open: false, reporter: null })}
+        onSuccessAction={() => setError(null)}
       />
 
       <DeleteConfirmModal
@@ -78,10 +78,10 @@ export default function ReportersPage() {
             : undefined
         }
         isPending={deleteReporter.isPending}
-        onConfirm={() => {
+        onConfirmAction={() => {
           if (deleteModal.reporter) deleteReporter.mutate(deleteModal.reporter.id);
         }}
-        onClose={() => setDeleteModal({ open: false, reporter: null })}
+        onCloseAction={() => setDeleteModal({ open: false, reporter: null })}
       />
     </>
   );

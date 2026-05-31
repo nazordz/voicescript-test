@@ -5,14 +5,14 @@ import type { ListState } from "@/lib/types";
 
 export function TableToolbar({
   state,
-  setState,
+  setStateAction,
   showAvailability,
   showLocation,
   showStatus,
   showRemote,
 }: {
   state: ListState;
-  setState: (next: ListState) => void;
+  setStateAction: (next: ListState) => void;
   showAvailability?: boolean;
   showLocation?: boolean;
   showStatus?: boolean;
@@ -26,7 +26,7 @@ export function TableToolbar({
         data-testid="search-input"
         value={state.search}
         onChange={(event) =>
-          setState({ ...state, page: 1, search: event.target.value })
+          setStateAction({ ...state, page: 1, search: event.target.value })
         }
       />
       {showAvailability ? (
@@ -35,7 +35,7 @@ export function TableToolbar({
           data-testid="filter-availability"
           value={state.availability}
           onChange={(event) =>
-            setState({ ...state, page: 1, availability: event.target.value })
+            setStateAction({ ...state, page: 1, availability: event.target.value })
           }
         >
           <option value="">All availability</option>
@@ -49,7 +49,7 @@ export function TableToolbar({
           data-testid="filter-location"
           value={state.location}
           onChange={(event) =>
-            setState({ ...state, page: 1, location: event.target.value })
+            setStateAction({ ...state, page: 1, location: event.target.value })
           }
         >
           <option value="">All locations</option>
@@ -64,7 +64,7 @@ export function TableToolbar({
           data-testid="filter-status"
           value={state.status}
           onChange={(event) =>
-            setState({ ...state, page: 1, status: event.target.value })
+            setStateAction({ ...state, page: 1, status: event.target.value })
           }
         >
           <option value="">All statuses</option>
@@ -81,7 +81,7 @@ export function TableToolbar({
           data-testid="filter-remote"
           value={state.isRemote}
           onChange={(event) =>
-            setState({ ...state, page: 1, isRemote: event.target.value })
+            setStateAction({ ...state, page: 1, isRemote: event.target.value })
           }
         >
           <option value="">All modes</option>

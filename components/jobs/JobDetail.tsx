@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
@@ -16,11 +17,11 @@ type ActionFormValues = {
 
 export function JobDetail({
   job,
-  onEdit,
+  onEditAction,
   onAction,
 }: {
   job: Job | null;
-  onEdit: (job: Job) => void;
+  onEditAction: (job: Job) => void;
   onAction: (args: {
     id: string;
     path: string;
@@ -31,6 +32,7 @@ export function JobDetail({
   const {
     register,
     getValues,
+    reset,
     formState: { dirtyFields },
   } = useForm<ActionFormValues>({
     defaultValues: { reporterId: "", editorId: "", editorFee: 50000 },
@@ -51,6 +53,15 @@ export function JobDetail({
         "/api/editors?pageSize=100&sortBy=name",
       ),
   });
+
+  useEffect(() => {
+    if (!job) return;
+    reset({
+      reporterId: job.reporterId ?? "",
+      editorId: job.editorId ?? "",
+      editorFee: job.editorFeeIdr,
+    });
+  }, [job, reset]);
 
   if (!job) return null;
 
@@ -78,7 +89,7 @@ export function JobDetail({
           className="btn btn-outline btn-sm"
           type="button"
           data-testid="job-edit-button"
-          onClick={() => onEdit(job)}
+          onClick={() => onEditAction(job)}
         >
           Edit job
         </button>
@@ -93,7 +104,7 @@ export function JobDetail({
           >
             <option value="">Auto assign</option>
             {reporters.data?.data
-              .filter((r) => r.availability)
+              .filter((r) => r.availability || r.id === job.reporterId)
               .map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.name} · {r.location}
@@ -130,7 +141,7 @@ export function JobDetail({
           >
             <option value="">Auto assign</option>
             {editors.data?.data
-              .filter((e) => e.availability)
+              .filter((e) => e.availability || e.id === job.editorId)
               .map((e) => (
                 <option key={e.id} value={e.id}>
                   {e.name}
@@ -155,11 +166,11 @@ export function JobDetail({
             Assign editor
           </button>
           {dirtyFields.editorId && !canAssignEditor ? (
-            <p className="label mt-2 text-error">
-              Editor can only be assigned when the job is{" "}
-              {JOB_STATUS_LABELS[JOB_STATUS.TRANSCRIBED]} (current:{" "}
-              {JOB_STATUS_LABELS[job.status as keyof typeof JOB_STATUS_LABELS]}).
-            </p>
+            <div className="label mt-2 text-error">
+              Editor can only be assigned when the job is
+              <br />
+              {JOB_STATUS_LABELS[JOB_STATUS.TRANSCRIBED]} 
+            </div>
           ) : null}
         </div>
         <div className="rounded-box border border-base-300 p-3">

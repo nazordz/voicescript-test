@@ -12,14 +12,14 @@ import type { ListResponse, ListState, Reporter } from "@/lib/types";
 
 export function ReportersTable({
   state,
-  setState,
-  onEdit,
-  onDelete,
+  setStateAction,
+  onEditAction,
+  onDeleteAction,
 }: {
   state: ListState;
-  setState: (next: ListState) => void;
-  onEdit: (reporter: Reporter) => void;
-  onDelete: (reporter: Reporter) => void;
+  setStateAction: (next: ListState) => void;
+  onEditAction: (reporter: Reporter) => void;
+  onDeleteAction: (reporter: Reporter) => void;
 }) {
   const search = useDebouncedValue(state.search);
 
@@ -33,18 +33,18 @@ export function ReportersTable({
 
   return (
     <div className="rounded-box bg-base-100 p-4 shadow-sm">
-      <TableToolbar state={state} setState={setState} showAvailability />
+      <TableToolbar state={state} setStateAction={setStateAction} showAvailability />
       <div className="overflow-x-auto">
         <table className="table table-sm" data-testid="reporters-table">
           <thead>
             <tr>
               <th>
-                <SortButton field="name" state={state} setState={setState}>
+                <SortButton field="name" state={state} setStateAction={setStateAction}>
                   Name
                 </SortButton>
               </th>
               <th>
-                <SortButton field="location" state={state} setState={setState}>
+                <SortButton field="location" state={state} setStateAction={setStateAction}>
                   Location
                 </SortButton>
               </th>
@@ -52,7 +52,7 @@ export function ReportersTable({
                 <SortButton
                   field="availability"
                   state={state}
-                  setState={setState}
+                  setStateAction={setStateAction}
                 >
                   Status
                 </SortButton>
@@ -76,7 +76,7 @@ export function ReportersTable({
                       className="btn btn-ghost btn-xs"
                       type="button"
                       data-testid="reporter-edit-button"
-                      onClick={() => onEdit(reporter)}
+                      onClick={() => onEditAction(reporter)}
                     >
                       Edit
                     </button>
@@ -84,7 +84,7 @@ export function ReportersTable({
                       className="btn btn-ghost btn-xs text-error"
                       type="button"
                       data-testid="reporter-delete-button"
-                      onClick={() => onDelete(reporter)}
+                      onClick={() => onDeleteAction(reporter)}
                     >
                       Delete
                     </button>
@@ -99,7 +99,7 @@ export function ReportersTable({
       <PaginationControls
         pagination={data?.pagination}
         state={state}
-        setStateAction={setState}
+        setStateAction={setStateAction}
       />
     </div>
   );

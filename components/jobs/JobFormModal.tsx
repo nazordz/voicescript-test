@@ -17,13 +17,13 @@ import type { Job } from "@/lib/types";
 export function JobFormModal({
   open,
   job,
-  onClose,
-  onSuccess,
+  onCloseAction,
+  onSuccessAction,
 }: {
   open: boolean;
   job: Job | null;
-  onClose: () => void;
-  onSuccess: (saved: Job) => void;
+  onCloseAction: () => void;
+  onSuccessAction: (saved: Job) => void;
 }) {
   const queryClient = useQueryClient();
   const { notify } = useToast();
@@ -64,8 +64,8 @@ export function JobFormModal({
     onSuccess: async (saved) => {
       await queryClient.invalidateQueries({ queryKey: ["jobs"] });
       notify(job ? `Job "${saved.caseName}" updated` : `Job "${saved.caseName}" created`);
-      onSuccess(saved);
-      onClose();
+      onSuccessAction(saved);
+      onCloseAction();
     },
     onError: (err) =>
       setFormError("root", {
@@ -184,7 +184,7 @@ export function JobFormModal({
               className="btn btn-ghost"
               type="button"
               data-testid="job-form-cancel"
-              onClick={onClose}
+              onClick={onCloseAction}
             >
               Cancel
             </button>
@@ -203,7 +203,7 @@ export function JobFormModal({
         </form>
       </div>
       <form method="dialog" className="modal-backdrop">
-        <button type="submit" onClick={onClose}>
+        <button type="submit" onClick={onCloseAction}>
           close
         </button>
       </form>

@@ -12,14 +12,14 @@ import type { Editor, ListResponse, ListState } from "@/lib/types";
 
 export function EditorsTable({
   state,
-  setState,
-  onEdit,
-  onDelete,
+  setStateAction,
+  onEditAction,
+  onDeleteAction,
 }: {
   state: ListState;
-  setState: (next: ListState) => void;
-  onEdit: (editor: Editor) => void;
-  onDelete: (editor: Editor) => void;
+  setStateAction: (next: ListState) => void;
+  onEditAction: (editor: Editor) => void;
+  onDeleteAction: (editor: Editor) => void;
 }) {
   const search = useDebouncedValue(state.search);
 
@@ -31,13 +31,13 @@ export function EditorsTable({
 
   return (
     <div className="rounded-box bg-base-100 p-4 shadow-sm">
-      <TableToolbar state={state} setState={setState} showAvailability />
+      <TableToolbar state={state} setStateAction={setStateAction} showAvailability />
       <div className="overflow-x-auto">
         <table className="table table-sm" data-testid="editors-table">
           <thead>
             <tr>
               <th>
-                <SortButton field="name" state={state} setState={setState}>
+                <SortButton field="name" state={state} setStateAction={setStateAction}>
                   Name
                 </SortButton>
               </th>
@@ -45,7 +45,7 @@ export function EditorsTable({
                 <SortButton
                   field="availability"
                   state={state}
-                  setState={setState}
+                  setStateAction={setStateAction}
                 >
                   Status
                 </SortButton>
@@ -68,7 +68,7 @@ export function EditorsTable({
                       className="btn btn-ghost btn-xs"
                       type="button"
                       data-testid="editor-edit-button"
-                      onClick={() => onEdit(editor)}
+                      onClick={() => onEditAction(editor)}
                     >
                       Edit
                     </button>
@@ -76,7 +76,7 @@ export function EditorsTable({
                       className="btn btn-ghost btn-xs text-error"
                       type="button"
                       data-testid="editor-delete-button"
-                      onClick={() => onDelete(editor)}
+                      onClick={() => onDeleteAction(editor)}
                     >
                       Delete
                     </button>
@@ -91,7 +91,7 @@ export function EditorsTable({
       <PaginationControls
         pagination={data?.pagination}
         state={state}
-        setStateAction={setState}
+        setStateAction={setStateAction}
       />
     </div>
   );

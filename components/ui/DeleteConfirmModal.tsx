@@ -5,15 +5,15 @@ export function DeleteConfirmModal({
   title,
   description,
   isPending,
-  onConfirm,
-  onClose,
+  onConfirmAction,
+  onCloseAction,
 }: {
   open: boolean;
   title: string;
   description?: string;
   isPending?: boolean;
-  onConfirm: () => void;
-  onClose: () => void;
+  onConfirmAction: () => void;
+  onCloseAction: () => void;
 }) {
   return (
     <dialog className="modal" open={open}>
@@ -27,7 +27,7 @@ export function DeleteConfirmModal({
             className="btn btn-ghost"
             type="button"
             data-testid="delete-cancel-button"
-            onClick={onClose}
+            onClick={onCloseAction}
           >
             Cancel
           </button>
@@ -36,7 +36,7 @@ export function DeleteConfirmModal({
             type="button"
             data-testid="delete-confirm-button"
             disabled={isPending}
-            onClick={onConfirm}
+            onClick={onConfirmAction}
           >
             {isPending ? <span className="loading loading-spinner loading-sm" /> : null}
             Delete
@@ -44,7 +44,7 @@ export function DeleteConfirmModal({
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">
-        <button type="submit" onClick={onClose}>
+        <button type="submit" onClick={onCloseAction}>
           close
         </button>
       </form>

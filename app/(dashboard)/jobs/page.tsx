@@ -74,15 +74,15 @@ export default function JobsPage() {
         <ErrorBanner message={error} />
         <JobsTable
           state={state}
-          setState={setState}
-          onSelect={(job) => setSelected(job)}
+          setStateAction={setState}
+          onSelectAction={(job) => setSelected(job)}
         />
       </Panel>
 
       <JobDetail
         key={selected?.id ?? "empty"}
         job={selected}
-        onEdit={(job) => setFormModal({ open: true, job })}
+        onEditAction={(job) => setFormModal({ open: true, job })}
         onAction={(args) => {
           setError(null);
           jobAction.mutate(args);
@@ -92,8 +92,8 @@ export default function JobsPage() {
       <JobFormModal
         open={formModal.open}
         job={formModal.job}
-        onClose={() => setFormModal({ open: false, job: null })}
-        onSuccess={(saved) => {
+        onCloseAction={() => setFormModal({ open: false, job: null })}
+        onSuccessAction={(saved) => {
           setSelected(saved);
           setError(null);
         }}

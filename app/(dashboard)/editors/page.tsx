@@ -56,17 +56,17 @@ export default function EditorsPage() {
         <ErrorBanner message={error} />
         <EditorsTable
           state={state}
-          setState={setState}
-          onEdit={(editor) => setFormModal({ open: true, editor })}
-          onDelete={(editor) => setDeleteModal({ open: true, editor })}
+          setStateAction={setState}
+          onEditAction={(editor) => setFormModal({ open: true, editor })}
+          onDeleteAction={(editor) => setDeleteModal({ open: true, editor })}
         />
       </Panel>
 
       <EditorFormModal
         open={formModal.open}
         editor={formModal.editor}
-        onClose={() => setFormModal({ open: false, editor: null })}
-        onSuccess={() => setError(null)}
+        onCloseAction={() => setFormModal({ open: false, editor: null })}
+        onSuccessAction={() => setError(null)}
       />
 
       <DeleteConfirmModal
@@ -78,10 +78,10 @@ export default function EditorsPage() {
             : undefined
         }
         isPending={deleteEditor.isPending}
-        onConfirm={() => {
+        onConfirmAction={() => {
           if (deleteModal.editor) deleteEditor.mutate(deleteModal.editor.id);
         }}
-        onClose={() => setDeleteModal({ open: false, editor: null })}
+        onCloseAction={() => setDeleteModal({ open: false, editor: null })}
       />
     </>
   );

@@ -16,13 +16,13 @@ import type { Editor } from "@/lib/types";
 export function EditorFormModal({
   open,
   editor,
-  onClose,
-  onSuccess,
+  onCloseAction,
+  onSuccessAction,
 }: {
   open: boolean;
   editor: Editor | null;
-  onClose: () => void;
-  onSuccess: () => void;
+  onCloseAction: () => void;
+  onSuccessAction: () => void;
 }) {
   const queryClient = useQueryClient();
   const { notify } = useToast();
@@ -61,8 +61,8 @@ export function EditorFormModal({
       notify(
         editor ? `Editor "${saved.name}" updated` : `Editor "${saved.name}" created`,
       );
-      onSuccess();
-      onClose();
+      onSuccessAction();
+      onCloseAction();
     },
     onError: (err) =>
       setFormError("root", {
@@ -115,7 +115,7 @@ export function EditorFormModal({
               className="btn btn-ghost"
               type="button"
               data-testid="editor-form-cancel"
-              onClick={onClose}
+              onClick={onCloseAction}
             >
               Cancel
             </button>
@@ -134,7 +134,7 @@ export function EditorFormModal({
         </form>
       </div>
       <form method="dialog" className="modal-backdrop">
-        <button type="submit" onClick={onClose}>
+        <button type="submit" onClick={onCloseAction}>
           close
         </button>
       </form>

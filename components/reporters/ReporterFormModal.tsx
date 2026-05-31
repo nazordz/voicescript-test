@@ -17,13 +17,13 @@ import type { Reporter } from "@/lib/types";
 export function ReporterFormModal({
   open,
   reporter,
-  onClose,
-  onSuccess,
+  onCloseAction,
+  onSuccessAction,
 }: {
   open: boolean;
   reporter: Reporter | null;
-  onClose: () => void;
-  onSuccess: () => void;
+  onCloseAction: () => void;
+  onSuccessAction: () => void;
 }) {
   const queryClient = useQueryClient();
   const { notify } = useToast();
@@ -68,8 +68,8 @@ export function ReporterFormModal({
           ? `Reporter "${saved.name}" updated`
           : `Reporter "${saved.name}" created`,
       );
-      onSuccess();
-      onClose();
+      onSuccessAction();
+      onCloseAction();
     },
     onError: (err) =>
       setFormError("root", {
@@ -138,7 +138,7 @@ export function ReporterFormModal({
               className="btn btn-ghost"
               type="button"
               data-testid="reporter-form-cancel"
-              onClick={onClose}
+              onClick={onCloseAction}
             >
               Cancel
             </button>
@@ -157,7 +157,7 @@ export function ReporterFormModal({
         </form>
       </div>
       <form method="dialog" className="modal-backdrop">
-        <button type="submit" onClick={onClose}>
+        <button type="submit" onClick={onCloseAction}>
           close
         </button>
       </form>

@@ -5,12 +5,12 @@ import type { ListState } from "@/lib/types";
 export function SortButton({
   field,
   state,
-  setState,
+  setStateAction,
   children,
 }: {
   field: string;
   state: ListState;
-  setState: (next: ListState) => void;
+  setStateAction: (next: ListState) => void;
   children: React.ReactNode;
 }) {
   const active = state.sortBy === field;
@@ -22,7 +22,7 @@ export function SortButton({
       type="button"
       data-testid={`sort-${field}`}
       onClick={() =>
-        setState({ ...state, page: 1, sortBy: field, sortDir: nextDir })
+        setStateAction({ ...state, page: 1, sortBy: field, sortDir: nextDir })
       }
     >
       {children} {active ? (state.sortDir === "asc" ? "↑" : "↓") : ""}
